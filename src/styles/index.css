@@ -127,10 +127,10 @@
     @apply text-3xl md:text-4xl font-semibold leading-snug;
   }
   h3 {
-    @apply text-lg md:text-xl xl:text-2xl;
+    @apply text-lg md:text-xl xl:text-2xl text-gray-950;
   }
   p {
-    @apply text-base leading-relaxed text-gray-800;
+    @apply text-base leading-relaxed text-gray-400;
   }
   a {
     @apply text-blue-600 underline hover:no-underline;

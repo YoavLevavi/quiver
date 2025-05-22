@@ -19,7 +19,7 @@ function Home() {
           {/* Column 1 - With content */}
           <div className="flex-1 flex flex-col gap-y-4 text-right">
             <h1 className="text-white">אתם קליק אחד מהגלשן הבא שלכם</h1>
-            <h3 className="text-white">
+            <h3 className="text-gray-200">
               מצאו את הגלשן המושלם שלכם! אצלנו תתחברו למאות גלשנים מכל הסוגים –
               חדשים ויד שנייה, במקום אחד.
             </h3>
