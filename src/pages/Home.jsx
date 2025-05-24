@@ -1,8 +1,8 @@
 import React from "react";
 import NavBar from "../components/NavBar";
 import backgroundImage from "../assets/hero_background.jpg";
-
-import SurfboardsCarousel from "../features/surfboards/SurfboardsCarousel";
+import SurfboardsCarousel from "../components/Surfboard/SurfboardsCarousel";
+import CategoryFilter from "../components/Surfboard/CategoryFilter";
 
 function Home() {
   return (
@@ -19,12 +19,12 @@ function Home() {
           {/* Column 1 - With content */}
           <div className="flex-1 flex flex-col gap-y-4 text-right">
             <h1 className="text-white">אתם קליק אחד מהגלשן הבא שלכם</h1>
-            <h3 className="text-gray-200">
+            <h3 className="text-gray-200 ">
               מצאו את הגלשן המושלם שלכם! אצלנו תתחברו למאות גלשנים מכל הסוגים –
               חדשים ויד שנייה, במקום אחד.
             </h3>
             <div className="flex flex-row gap-x-4">
-              <button class="btn btn-s sm:btn-sm md:btn-md lg:btn-lg xl:btn-lg">
+              <button className="btn btn-s sm:btn-sm md:btn-md lg:btn-lg xl:btn-lg">
                 אני רוצה גלשן!
               </button>
             </div>
@@ -37,12 +37,12 @@ function Home() {
       {/* This is the surfboards carousel section. */}
       <div className="container flex flex-col justify-items-center py-8">
         <div className="text-center">
-          <h2 className="">החדשים באתר</h2>
+          <h2 className="">הגלשנים החדשים באתר</h2>
         </div>
+        <CategoryFilter />
         <div className="container flex flex-row">
           <SurfboardsCarousel />
         </div>
-        <button className="btn">Default</button>
       </div>
     </div>
   );

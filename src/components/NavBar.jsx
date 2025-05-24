@@ -1,42 +1,128 @@
 // import quiverLogo from "../assets/quiver_logo_svg.svg";
 
 import React from "react";
+import useAuthStore from "../store/useAuthStore";
+import { NavLink } from "react-router";
 
 function NavBar() {
+  const { user, logout } = useAuthStore();
+
   return (
-    <div className="top-0 left-0 w-full bg-white">
-      {/* <div className="container flex justify-between py-2 ">
-        <div className="flex justify-end">
-          <img src={quiverLogo} alt="Quiver Logo" className="w-16" />
+    <div className="navbar bg-base-100 shadow-sm flex justify-between">
+      <div className="flex justify-between items-center">
+        {/* Hamburger menu for mobile */}
+        <div className="flex-none lg:hidden">
+          <div className="dropdown">
+            <label tabIndex={0} className="btn btn-ghost md:hidden">
+              {/* Hamburger icon */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            </label>
+            <ul
+              tabIndex={0}
+              className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
+            >
+              <li>
+                <a>חנויות</a>
+              </li>
+              <li>
+                <a>גלשנים יד שניה</a>
+              </li>
+              <li>
+                <a>פרופיל</a>
+              </li>
+            </ul>
+          </div>
         </div>
-        <NavigationMenu>
-          <NavigationMenuList className="flex space-x-6">
-            <NavigationMenuItem>
-              <NavigationMenuTrigger className="text-gray-600 hover:text-gray-800">
-                Features
-              </NavigationMenuTrigger>
-              <NavigationMenuContent className="bg-white shadow-lg rounded-md p-4">
-                <NavigationMenuLink className="block text-gray-600 hover:text-gray-800">
-                  Feature 1
-                </NavigationMenuLink>
-                <NavigationMenuLink className="block text-gray-600 hover:text-gray-800">
-                  Feature 2
-                </NavigationMenuLink>
-              </NavigationMenuContent>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-              <NavigationMenuTrigger className="text-gray-600 hover:text-gray-800">
-                Pricing
-              </NavigationMenuTrigger>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-              <NavigationMenuTrigger className="text-gray-600 hover:text-gray-800">
-                About
-              </NavigationMenuTrigger>
-            </NavigationMenuItem>
-          </NavigationMenuList>
-        </NavigationMenu>
-      </div> */}
+
+        {/* Logo */}
+        <NavLink to="/">
+          <button className="btn btn-ghost text-xl">Quiver</button>
+        </NavLink>
+        {/* Desktop menu and search bar */}
+        <div className="flex-1 hidden md:block">
+          <ul className="menu menu-horizontal px-1 ">
+            <li>
+              <a>חנויות</a>
+            </li>
+            <li>
+              <a>גלשנים יד שניה</a>
+            </li>
+          </ul>
+        </div>
+        <div className="flex-1">
+          <label className="input border-2 border-gray-200 rounded-xl ">
+            <svg
+              className="h-[1em] opacity-50"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+            >
+              <g
+                strokeLinejoin="round"
+                strokeLinecap="round"
+                strokeWidth="2.5"
+                fill="none"
+                stroke="currentColor"
+              >
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.3-4.3"></path>
+              </g>
+            </svg>
+            <input type="search" required placeholder="לחיפוש גלשנים" />
+          </label>
+        </div>
+      </div>
+
+      {/* Profile */}
+      {/* Profile */}
+      <div className="flex-none">
+        {user ? (
+          <div className="dropdown dropdown-end">
+            <div
+              tabIndex={0}
+              role="button"
+              className="btn btn-ghost btn-circle avatar"
+            >
+              <div className="w-10 rounded-full">
+                <img
+                  alt={user.displayName || "User"}
+                  src={user.photoURL || "/default-avatar.png"}
+                />
+              </div>
+            </div>
+            <ul
+              tabIndex={0}
+              className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
+            >
+              <li>
+                <NavLink to="/profile">פרופיל</NavLink>
+              </li>
+              <li>
+                <a>הגדרות</a>
+              </li>
+              <li>
+                <a onClick={logout}>התנתקות</a>
+              </li>
+            </ul>
+          </div>
+        ) : (
+          <a href="/login" className="btn btn-sm btn-natural">
+            התחבר
+          </a>
+        )}
+      </div>
     </div>
   );
 }
