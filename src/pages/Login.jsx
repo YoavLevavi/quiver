@@ -1,5 +1,6 @@
 import React from "react";
 import GoogleSignInButton from "../components/GoogleSignInButton";
+import TextRegular from "../components/Text/TextBody";
 
 function Login() {
   return (
@@ -16,9 +17,9 @@ function Login() {
               <h2 className="card-title">ברוכים הבאים לQuiver</h2>
             </div>
             <GoogleSignInButton />
-            <p className="text-center">
+            <TextRegular>
               כרגע ניתן להצטרף רק דרך התחברות עם גוגל 😁
-            </p>
+            </TextRegular>
           </div>
         </div>
       </div>

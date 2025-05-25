@@ -86,7 +86,6 @@ function NavBar() {
       </div>
 
       {/* Profile */}
-      {/* Profile */}
       <div className="flex-none">
         {user ? (
           <div className="dropdown dropdown-end">

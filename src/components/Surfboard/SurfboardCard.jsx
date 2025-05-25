@@ -4,6 +4,10 @@ import clsx from "clsx";
 import { getDoc } from "firebase/firestore";
 import { formatDate, formatPrice } from "../../utils/format";
 import { getConditionLabel } from "../../utils/surfboardHelpers";
+import Title2 from "../Text/Title2";
+import TextLarge from "../Text/TextLarge";
+import TextBody from "../Text/TextBody";
+import TextSmall from "../Text/TextSmall";
 /**
  * SurfboardCard displays information about a surfboard.
  * @param {Object} props
@@ -80,30 +84,27 @@ function SurfboardCard({
         </div>
 
         {/* Model and price */}
-        <h2
-          dir="ltr"
-          className="justify-end card-title text-base xl:text-lg font-bold"
-        >
+        <TextLarge className="justify-start card-title text-base xl:text-lg font-bold">
           {size}' • {volume}L • {brand} {model}
-        </h2>
-        <p className="text-md font-semibold text-right text-primary">
+        </TextLarge>
+        <TextLarge className="text-md font-semibold text-right text-primary">
           {formatPrice(price)}
-        </p>
+        </TextLarge>
 
         {/* Description placeholder */}
-        <p className="text-gray-600 line-clamp-3">
+        <TextBody className="line-clamp-3">
           {/* TODO: Replace with actual description */}
           {description}
-        </p>
+        </TextBody>
         {/* Upload date and seller info */}
-        <p className="text-sm">
+        <TextSmall>
           {formatDate(uploadDate)} •{" "}
           {sellerData
             ? `${sellerData.first_name ?? ""} ${
                 sellerData.last_name ?? ""
               }`.trim()
             : "אנונימי"}
-        </p>
+        </TextSmall>
       </div>
     </div>
   );

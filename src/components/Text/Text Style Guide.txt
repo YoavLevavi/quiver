@@ -1,0 +1,41 @@
+Welcome to Quiver's Text Style Guide!
+
+-------
+
+Each text component in this app has its own design values.
+We have created a dedicated text component for every text style used, following our design system.
+
+-------
+
+Each text component accepts two style values: {light/dark, bold/regular}.
+If no value is selected, the component uses its default style.
+
+The following properties cannot be changed: size, letter spacing (leading), and line height.
+
+-------
+
+Titles:
+
+Title1 – Used for large titles, such as in the hero section.
+Title2 – Used for important sections or areas that require emphasis.
+Title3 – Used for smaller section titles or specific titles.
+
+-------
+
+Subtitles:
+
+SubTitle1 – Used below Title1.
+SubTitle2 – Used below Title2 or Title3.
+
+-------
+
+Body Text:
+
+TextLarge – Used for large body text (approximately 18px on laptop screens).
+TextBody – Used for regular body text, such as footers and buttons (approximately 16px on laptop screens).
+TextSmall – Used for small text, such as in the navigation bar (approximately 14px on laptop screens).
+
+-------
+
+
+https://daisyui.com/docs/colors/

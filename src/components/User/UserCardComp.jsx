@@ -1,5 +1,6 @@
 import React from "react";
 import { MapPin, Phone } from "lucide-react";
+import TextBody from "../Text/TextBody";
 
 function UserCardComp({ user, userData }) {
   return (
@@ -12,17 +13,17 @@ function UserCardComp({ user, userData }) {
         </div>
         <div className="flex flex-col items-start">
           <div className="flex flex-row">
-            <h3>
+            <TextBody bold={true}>
               {userData?.first_name} {userData?.last_name}
-            </h3>
+            </TextBody>
           </div>
           <div className="flex flex-row justify-center items-center gap-2">
             <MapPin size={16} color="#98a1ae" />
-            <p>{userData?.location}</p>
+            <TextBody>{userData?.location}</TextBody>
           </div>
           <div className="flex flex-row justify-center items-center gap-2">
             <Phone size={16} color="#98a1ae" />
-            <p>{userData?.phone_number}</p>
+            <TextBody>{userData?.phone_number}</TextBody>
           </div>
         </div>
       </div>

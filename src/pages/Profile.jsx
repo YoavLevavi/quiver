@@ -5,6 +5,7 @@ import SurfboardsCarousel from "../components/Surfboard/SurfboardsCarousel";
 import useSurfboardStore from "../store/useSurfboardStore";
 import useUserStore from "../store/useUserStore";
 import UserCardComp from "../components/User/UserCardComp";
+import Title2 from "../components/Text/Title2";
 
 function Profile() {
   const { user } = useAuthStore();
@@ -49,7 +50,7 @@ function Profile() {
       {/* User listed surfboards */}
       <div className="container flex flex-col justify-items-center py-6">
         <div className="text-center">
-          <h2 className="">הגלשנים שלך</h2>
+          <Title2>הגלשנים שלך</Title2>
         </div>
         <div className="container flex flex-row py-6">
           <SurfboardsCarousel />
