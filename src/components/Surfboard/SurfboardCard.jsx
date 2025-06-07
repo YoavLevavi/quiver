@@ -8,6 +8,7 @@ import Title2 from "../Text/Title2";
 import TextLarge from "../Text/TextLarge";
 import TextBody from "../Text/TextBody";
 import TextSmall from "../Text/TextSmall";
+import { Link } from "react-router";
 /**
  * SurfboardCard displays information about a surfboard.
  * @param {Object} props
@@ -23,6 +24,7 @@ import TextSmall from "../Text/TextSmall";
  * @param {string} props.description - Description of the surfboard.
  */
 function SurfboardCard({
+  surfboardId,
   mainImage,
   model,
   isPrivate,
@@ -50,63 +52,66 @@ function SurfboardCard({
   }, [seller]);
 
   return (
-    <div className="card bg-base-100 shadow-sm">
-      {/* Surfboard main image */}
-      <figure>
-        <img
-          src={mainImage}
-          alt={model}
-          className="w-full object-cover"
-          loading="lazy"
-        />
-      </figure>
-      <div className="card-body">
-        <div className="flex flex-row gap-4">
-          {/* Condition badge */}
-          <span
-            className={clsx("badge p-3", {
-              "badge-success": condition === "new",
-              "badge-warning": condition === "liked new",
-              "badge-neutral": condition === "used",
-            })}
-          >
-            {getConditionLabel(condition)}
-          </span>
-          {/* Seller type badge */}
-          <span
-            className={clsx("badge p-3", {
-              "badge-primary": isPrivate === true,
-              "badge-secondary": isPrivate === false,
-            })}
-          >
-            {isPrivate ? "פרטי" : "חנות גלישה"}
-          </span>
+    <Link to={`/surfboards/${surfboardId}`} className="no-underline">
+      <div className="card bg-base-100 shadow-sm max-w-xs">
+        {/* Surfboard main image */}
+        <figure className="relative w-full aspect-[9/16] overflow-hidden bg-gray-100">
+          <img
+            src={mainImage}
+            alt={model}
+            className="absolute inset-0 w-full h-full object-cover"
+            loading="lazy"
+          />
+        </figure>
+
+        <div className="card-body">
+          <div className="flex flex-wrap gap-4">
+            {/* Condition badge */}
+            <span
+              className={clsx("badge p-3", {
+                "badge-success": condition === "new",
+                "badge-warning": condition === "liked new",
+                "badge-neutral": condition === "used",
+              })}
+            >
+              {getConditionLabel(condition)}
+            </span>
+            {/* Seller type badge */}
+            <span
+              className={clsx("badge p-3", {
+                "badge-primary": isPrivate === true,
+                "badge-secondary": isPrivate === false,
+              })}
+            >
+              {isPrivate ? "פרטי" : "חנות גלישה"}
+            </span>
+          </div>
+
+          {/* Model and price */}
+          <TextLarge className="justify-start card-title text-base xl:text-lg font-bold">
+            {size}' • {volume}L • {brand} {model}
+          </TextLarge>
+          <TextLarge className="text-md font-semibold text-right text-primary">
+            {formatPrice(price)}
+          </TextLarge>
+
+          {/* Description placeholder */}
+          <TextBody className="line-clamp-3">
+            {/* TODO: Replace with actual description */}
+            {description}
+          </TextBody>
+          {/* Upload date and seller info */}
+          <TextSmall>
+            {formatDate(uploadDate)} •{" "}
+            {sellerData
+              ? `${sellerData.first_name ?? ""} ${
+                  sellerData.last_name ?? ""
+                }`.trim()
+              : "אנונימי"}
+          </TextSmall>
         </div>
-
-        {/* Model and price */}
-        <TextLarge className="justify-start card-title text-base xl:text-lg font-bold">
-          {size}' • {volume}L • {brand} {model}
-        </TextLarge>
-        <TextLarge className="text-md font-semibold text-right text-primary">
-          {formatPrice(price)}
-        </TextLarge>
-
-        {/* Description placeholder */}
-        <TextBody className="line-clamp-3">
-          {/* TODO: Replace with actual description */}
-          {description}
-        </TextBody>
-        {/* Upload date and seller info */}
-        <TextSmall>
-          {formatDate(uploadDate)} •{" "}
-          {sellerData
-            ? `${sellerData.first_name ?? ""} ${
-                sellerData.last_name ?? ""
-              }`.trim()
-            : "אנונימי"}
-        </TextSmall>
       </div>
-    </div>
+    </Link>
   );
 }
 

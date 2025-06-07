@@ -16,3 +16,11 @@ export const getConditionLabel = (condition) => {
       return "לא ידוע";
   }
 };
+
+export const CATEGORIES = [
+  { value: "", label: "בחר קטגוריה" },
+  { value: "shortboard", label: "שורטבורד" },
+  { value: "longboard", label: "לונגבורד" },
+  { value: "funboard", label: "פאנבורד" },
+  { value: "fish", label: "פיש" },
+];

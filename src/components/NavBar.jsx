@@ -3,7 +3,25 @@
 import React from "react";
 import useAuthStore from "../store/useAuthStore";
 import { NavLink } from "react-router";
+import HamburgerIcon from "./UI/HamburgerIcon";
 
+/**
+ * NavBar component renders the main navigation bar for the application.
+ *
+ * Features:
+ * - Responsive design with a hamburger menu for mobile devices.
+ * - Displays the application logo and navigation links.
+ * - Includes a search bar for searching surfboards.
+ * - Shows user profile avatar and dropdown menu when authenticated.
+ * - Provides login button when user is not authenticated.
+ *
+ * Uses:
+ * - `useAuthStore` hook to access user authentication state and logout function.
+ * - `NavLink` from react-router-dom for navigation.
+ *
+ * @component
+ * @returns {JSX.Element} The rendered navigation bar component.
+ */
 function NavBar() {
   const { user, logout } = useAuthStore();
 
@@ -15,27 +33,17 @@ function NavBar() {
           <div className="dropdown">
             <label tabIndex={0} className="btn btn-ghost md:hidden">
               {/* Hamburger icon */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              </svg>
+              <HamburgerIcon />
             </label>
             <ul
               tabIndex={0}
-              className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
+              className="menu menu-md dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
             >
               <li>
-                <a>חנויות</a>
+                <NavLink to={"/forecast"}>תחזית</NavLink>
+              </li>
+              <li>
+                <NavLink to={"/stores"}>חנויות</NavLink>
               </li>
               <li>
                 <a>גלשנים יד שניה</a>
@@ -49,11 +57,14 @@ function NavBar() {
 
         {/* Logo */}
         <NavLink to="/">
-          <button className="btn btn-ghost text-xl">Quiver</button>
+          <button className="flex-1 btn btn-ghost text-xl">Quiver</button>
         </NavLink>
         {/* Desktop menu and search bar */}
-        <div className="flex-1 hidden md:block">
+        <div className="hidden md:block">
           <ul className="menu menu-horizontal px-1 ">
+            <li>
+              <NavLink to={"/forecast"}>תחזית</NavLink>
+            </li>
             <li>
               <a>חנויות</a>
             </li>
@@ -103,7 +114,7 @@ function NavBar() {
             </div>
             <ul
               tabIndex={0}
-              className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
+              className="menu menu-md dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
             >
               <li>
                 <NavLink to="/profile">פרופיל</NavLink>

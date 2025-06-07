@@ -1,3 +1,4 @@
+// /store/useSurfboardStore.js
 import { create } from "zustand";
 import {
   collection,
@@ -6,74 +7,124 @@ import {
   limit,
   query,
   where,
+  addDoc,
+  serverTimestamp,
 } from "firebase/firestore";
-import { db } from "../utils/firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { db, storage, auth } from "../utils/firebase";
 
 const useSurfboardStore = create((set, get) => ({
   surfboards: [],
   loading: false,
 
-  filters: {
-    category: "all",
-  },
+  filters: { category: "all" },
 
   setFilter: (key, value) =>
-    set((state) => ({
-      filters: { ...state.filters, [key]: value },
-    })),
+    set((state) => ({ filters: { ...state.filters, [key]: value } })),
 
-  /** Fetch surfboards from Firestore */
   fetchSurfboards: async ({ limitTo } = {}) => {
     set({ loading: true });
-
     let surfboardsRef = collection(db, "surfboards");
     if (limitTo) {
       surfboardsRef = query(surfboardsRef, limit(limitTo));
     }
 
     const snapshot = await getDocs(surfboardsRef);
-    const all = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    const all = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
     const { filters } = get();
-    const filtered = all.filter((board) => {
-      const matchCategory =
-        filters.category === "all" || board.category === filters.category;
-      return matchCategory;
-    });
+    const filtered = all.filter(
+      (board) =>
+        filters.category === "all" || board.category === filters.category
+    );
 
     set({ surfboards: filtered, loading: false });
   },
 
-  /** Fetch surfboards for the user logged in */
-  /** NEW: Fetch surfboards for a specific user (by seller/userId) */
   fetchUserSurfboards: async (userId) => {
     set({ loading: true });
-
-    // Create a reference to the user document
     const userRef = doc(db, "users", userId);
-
-    // Query surfboards where 'seller' == userRef
-    const surfboardsRef = collection(db, "surfboards");
-    const q = query(surfboardsRef, where("seller", "==", userRef));
+    const q = query(
+      collection(db, "surfboards"),
+      where("seller", "==", userRef)
+    );
     const snapshot = await getDocs(q);
+    const all = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
-    const all = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-
-    // Optional: filter by category, just like in fetchSurfboards
     const { filters } = get();
-    const filtered = all.filter((board) => {
-      const matchCategory =
-        filters.category === "all" || board.category === filters.category;
-      return matchCategory;
-    });
+    const filtered = all.filter(
+      (board) =>
+        filters.category === "all" || board.category === filters.category
+    );
 
     set({ surfboards: filtered, loading: false });
+  },
+
+  fetchSurfboardById: async (id) => {
+    set({ loading: true });
+    try {
+      const surfboardDoc = await getDocs(
+        query(collection(db, "surfboards"), where("__name__", "==", id))
+      );
+      const surfboard =
+        surfboardDoc.docs.length > 0
+          ? { id: surfboardDoc.docs[0].id, ...surfboardDoc.docs[0].data() }
+          : null;
+      set({ surfboards: surfboard ? [surfboard] : [], loading: false });
+      return surfboard;
+    } catch (error) {
+      set({ loading: false });
+      console.error("Error fetching surfboard by id:", error);
+      return null;
+    }
+  },
+
+  uploadSurfboard: async (data) => {
+    try {
+      const user = auth.currentUser;
+      if (!user) throw new Error("User not authenticated");
+
+      const sellerRef = doc(db, "users", user.uid);
+
+      const uploadedImageURLs = await Promise.all(
+        Array.from(data.images).map(async (file, index) => {
+          const path = `surfboards/${user.uid}/${Date.now()}-${index}-${
+            file.name
+          }`;
+          const fileRef = ref(storage, path);
+          await uploadBytes(fileRef, file);
+          return await getDownloadURL(fileRef);
+        })
+      );
+
+      const surfboardData = {
+        category: data.category,
+        color: data.color,
+        brand: data.brand,
+        finSetup: data.finSetup,
+        model: data.model,
+        size: data.size,
+        finSystem: data.finSystem,
+        volume: data.volume,
+        description: data.description,
+        images: uploadedImageURLs,
+        upload_date: serverTimestamp(),
+        isPrivate: true,
+        seller: sellerRef,
+        condition: data.condition || "used",
+        status: data.status || "available",
+        location: data.location,
+        price: Number(data.price),
+        skillLevel: data.skillLevel,
+        technology: data.technology,
+      };
+
+      await addDoc(collection(db, "surfboards"), surfboardData);
+      return true;
+    } catch (error) {
+      console.error("Error uploading surfboard:", error);
+      return false;
+    }
   },
 }));
 

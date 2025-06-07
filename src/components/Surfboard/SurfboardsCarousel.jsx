@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import useSurfboardStore from "../../store/useSurfboardStore";
 import SurfboardCard from "./SurfboardCard";
+import LoadingIndicator from "../UI/LoadingIndicator";
 
 /**
  * Displays a carousel/grid of surfboards fetched from the store.
@@ -20,14 +21,15 @@ function SurfboardsCarousel() {
   }, []);
 
   return (
-    <div className="container min-h-[300px] flex justify-center items-center">
+    <div className="container flex justify-around items-center">
       {loading ? (
-        <span className="loading loading-dots loading-xl text-info"></span>
+        <LoadingIndicator />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {surfboards.map((surfboard, index) => (
             <SurfboardCard
               key={surfboard.id || index}
+              surfboardId={surfboard.id}
               model={surfboard.model}
               mainImage={surfboard.images[0]}
               isPrivate={surfboard.isPrivate}

@@ -9,7 +9,7 @@ import Title2 from "../components/Text/Title2";
 
 function Home() {
   return (
-    <div className="">
+    <div>
       <NavBar />
       {/* This is the hero section. */}
       <div
@@ -21,7 +21,7 @@ function Home() {
         <div className="container flex flex-row">
           {/* Column 1 - With content */}
           <div className="flex-1 flex flex-col gap-y-4">
-            <Title1 variant="onDark">אתם קליק אחד מהגלשן הבא שלכם</Title1>
+            <Title1 variant="onDark">הבית של הגולשים בישראל!</Title1>
             <SubTitle1 variant="onDark">
               מצאו את הגלשן המושלם שלכם! אצלנו תתחברו למאות גלשנים מכל הסוגים –
               חדשים ויד שנייה, במקום אחד.

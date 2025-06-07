@@ -1,6 +1,6 @@
 import React from "react";
-import GoogleSignInButton from "../components/GoogleSignInButton";
 import TextRegular from "../components/Text/TextBody";
+import GoogleSignInButton from "../components/UI/GoogleSignInButton";
 
 function Login() {
   return (

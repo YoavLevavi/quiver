@@ -1,11 +1,12 @@
 import React from "react";
 import { MapPin, Phone } from "lucide-react";
 import TextBody from "../Text/TextBody";
+import clsx from "clsx";
 
-function UserCardComp({ user, userData }) {
+function UserCardComp({ user, userData, className }) {
   return (
-    <div className="container flex justify-center py-8">
-      <div className="w-full max-w-lg flex flex-row shadow p-6 gap-6 ">
+    <div className={clsx("card w-80 bg-base-200 rounded-2xl", className)}>
+      <div className="flex flex-row p-6 gap-6">
         <div className="avatar">
           <div className="w-24 rounded-full">
             <img src={user.photoURL} />

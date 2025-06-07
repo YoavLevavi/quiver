@@ -164,6 +164,18 @@
   }
 } */
 
+@layer base {
+  :root {
+    --chart-1: #2563eb;
+    --chart-2: #60a5fa;
+  }
+
+  .dark {
+    --chart-1: #dc2626;
+    --chart-2: #3b82f6;
+  }
+}
+
 @layer components {
   .container {
     @apply mx-auto px-4;
