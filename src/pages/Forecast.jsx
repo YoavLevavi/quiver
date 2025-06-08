@@ -21,6 +21,7 @@ import {
   ArrowUp,
 } from "lucide-react";
 import { toFeet, toKmh } from "../utils/conversions";
+import { DailyWavePeakChart } from "../components/Forecast/DailyWavePeakChart";
 
 const DEFAULT_SPOT = {
   name: "אשדוד, לידו",
@@ -91,7 +92,8 @@ function Forecast() {
       airTemp: weatherJson.current?.temp ?? null,
       windSpeed: weatherJson.current?.wind_speed ?? null,
       windDirection: weatherJson.current?.wind_deg ?? null,
-      uvIndex: sunJson.daily?.uv_index_max?.[0] ?? null,
+      uvIndex: weatherJson.current?.uvi ?? null,
+
       sunrise: sunJson.daily?.sunrise?.[0] ?? null,
       sunset: sunJson.daily?.sunset?.[0] ?? null,
       waterTemp:
@@ -114,14 +116,28 @@ function Forecast() {
 
     setConditions(newConditions);
 
-    const chartData =
-      marineJson.hourly?.time?.slice(0, 16).map((time, i) => ({
-        day: new Date(time).toLocaleDateString("he-IL", {
-          day: "2-digit",
-          month: "short",
-        }),
-        wave: marineJson.hourly?.wave_height?.[i]?.toFixed(2) ?? "0.0",
-      })) || [];
+    // ✅ Group hourly data by date and take max wave height per day
+    const timeArray = marineJson.hourly?.time || [];
+    const waveHeights = marineJson.hourly?.wave_height || [];
+
+    const dailyMaxMap = new Map();
+
+    timeArray.forEach((timestamp, i) => {
+      const dateOnly = timestamp.split("T")[0]; // e.g., "2025-06-08"
+      const height = waveHeights[i];
+
+      if (!dailyMaxMap.has(dateOnly) || height > dailyMaxMap.get(dateOnly)) {
+        dailyMaxMap.set(dateOnly, height);
+      }
+    });
+
+    const chartData = Array.from(dailyMaxMap.entries()).map(
+      ([dateStr, wave]) => ({
+        day: dateStr,
+        wave: wave.toFixed(2),
+      })
+    );
+
     setData(chartData);
   };
 
@@ -186,7 +202,9 @@ function Forecast() {
     {
       icon: (
         <ArrowUp
-          style={{ transform: `rotate(${conditions.waveDirection || 0}deg)` }}
+          style={{
+            transform: `rotate(${conditions.waveDirection + 180 || 0}deg)`,
+          }}
         />
       ),
       label: "כיוון הגל",
@@ -204,7 +222,9 @@ function Forecast() {
     {
       icon: (
         <ArrowUp
-          style={{ transform: `rotate(${conditions.windDirection || 0}deg)` }}
+          style={{
+            transform: `rotate(${conditions.windDirection + 180 || 0}deg)`,
+          }}
         />
       ),
       label: "כיוון הרוח",
@@ -281,7 +301,9 @@ function Forecast() {
           </div>
         </div>
       </div>
-
+      <div className="container flex flex-row justify-center py-6">
+        <UnitToggle unit={unit} onChange={setUnit} />
+      </div>
       <div className="container grid grid-cols-2 lg:grid-cols-4 gap-4 py-6">
         {infoCards.map((card, idx) => (
           <InfoCard
@@ -294,8 +316,6 @@ function Forecast() {
       </div>
 
       <div className="p-4 max-w-4xl mx-auto">
-        <UnitToggle unit={unit} onChange={setUnit} />
-
         {error && (
           <div className="alert alert-error my-4">
             {error === "No ocean/sea at this location"
@@ -307,7 +327,7 @@ function Forecast() {
         {loading ? (
           <LoadingIndicator />
         ) : (
-          !error && <ForecastChart data={data} unit={unit} />
+          <>{!error && <ForecastChart data={data} unit={unit} />}</>
         )}
       </div>
     </>

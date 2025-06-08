@@ -1,88 +1,100 @@
 import React from "react";
 import {
-  ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
-} from "@/components/ui/chart";
-import {
   BarChart,
   Bar,
   XAxis,
-  CartesianGrid,
-  Tooltip,
+  YAxis,
   LabelList,
+  ResponsiveContainer,
 } from "recharts";
 
-// ✅ Custom Tooltip using DaisyUI styling
-const CustomTooltip = ({ active, payload, label }) => {
-  if (!active || !payload?.length) return null;
+// Always show the wave height above the bar
+const WaveLabel = ({ x, y, value, width }) => {
+  if (!value) return null;
 
-  return (
-    <div className="bg-base-100 shadow rounded p-3 text-sm border border-base-300">
-      <div className="font-semibold">{label}</div>
-      <div className="text-info">
-        גובה גלים: <span className="font-bold">{payload[0].value}</span>
-      </div>
-    </div>
-  );
-};
-
-// Custom label to prevent disappearing labels at the top
-const WaveLabel = (props) => {
-  const { x, y, value, width } = props;
-  // Adjust y to always be inside the chart area
-  const safeY = Math.max(y - 8, 16); // 16px padding from top
   return (
     <text
       x={x + width / 2}
-      y={safeY}
+      y={y - 10}
       textAnchor="middle"
-      className="fill-foreground"
+      fill="#000"
       fontSize={12}
       fontWeight={500}
-      dominantBaseline="middle"
     >
       {value}
     </text>
   );
 };
 
-function ForecastChart({ data, unit }) {
-  const chartData = data.map((d) => ({
-    ...d,
-    wave: unit === "ft" ? (d.wave * 3.28084).toFixed(2) : d.wave,
-  }));
+const ForecastChart = ({ data, unit }) => {
+  if (!data || data.length === 0) return null;
 
-  const chartConfig = {
-    wave: {
-      label: unit === "ft" ? "גובה גלים מרבי (פיט)" : "גובה גלים מרבי (מ׳)",
-      color: "var(--chart-1)",
-    },
-  };
+  const maxY = unit === "ft" ? 10 : 3; // fixed max Y axis
+  const suffix = unit === "ft" ? "פיט" : "מ׳";
+
+  const chartData = data
+    .map((d) => {
+      const date = new Date(d.day);
+      if (isNaN(date)) return null;
+
+      const weekday = date.toLocaleDateString("he-IL", { weekday: "long" }); // שבת
+      const formattedDate = date
+        .toLocaleDateString("he-IL", {
+          day: "2-digit",
+          month: "2-digit",
+        })
+        .replace(/\./g, "/"); // ensure slash instead of dot
+
+      const height =
+        unit === "ft"
+          ? (parseFloat(d.wave) * 3.28084).toFixed(1)
+          : parseFloat(d.wave).toFixed(1);
+
+      return {
+        day: `${weekday} ${formattedDate}`, // שבת 14/06
+        wave: Number(height),
+      };
+    })
+    .filter(Boolean);
 
   return (
-    <div dir="rtl">
-      <ChartContainer
-        config={chartConfig}
-        className="h-[600px] w-full overflow-x-auto"
-      >
-        <BarChart width={900} height={360} data={[...chartData].reverse()}>
-          <CartesianGrid vertical={false} />
+    <div className="rounded-xl p-6 bg-[#f6f6f6]" dir="rtl">
+      <div className="mb-3">
+        <h3 className="text-xl font-bold text-right">תחזית גובה גלים</h3>
+        <p className="text-sm text-gray-500 text-right">
+          גובה יומי מקסימלי ({suffix})
+        </p>
+      </div>
+
+      <ResponsiveContainer width="100%" height={240}>
+        <BarChart data={[...chartData].reverse()}>
           <XAxis
             dataKey="day"
-            tickLine={false}
-            tickMargin={10}
             axisLine={false}
+            tickLine={false}
+            tick={{ fontSize: 13 }}
           />
-          <Tooltip content={<CustomTooltip />} />
-          <ChartLegend content={<ChartLegendContent />} />
-          <Bar dataKey="wave" fill="var(--chart-1)" radius={4}>
-            <LabelList dataKey="wave" content={<WaveLabel />} />
+          <YAxis
+            domain={[0, 10]}
+            ticks={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
+            orientation="right"
+            tick={{ fontSize: 12 }}
+            tickLine={false}
+            axisLine={false}
+            width={30}
+          />
+          <Bar
+            dataKey="wave"
+            radius={[8, 8, 0, 0]}
+            fill="#d1d5db"
+            isAnimationActive={false}
+          >
+            <LabelList content={<WaveLabel />} />
           </Bar>
         </BarChart>
-      </ChartContainer>
+      </ResponsiveContainer>
     </div>
   );
-}
+};
 
 export default ForecastChart;

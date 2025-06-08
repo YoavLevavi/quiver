@@ -3,16 +3,22 @@ import PropTypes from "prop-types";
 
 function UnitToggle({ unit, onChange }) {
   return (
-    <div className="mb-4 flex gap-4 justify-end">
+    <div className="flex items-center gap-4">
       <button
-        className={`btn btn-sm ${unit === "m" ? "btn-primary" : "btn-outline"}`}
+        className={`px-4 py-2 rounded-full text-sm transition ${
+          unit === "m"
+            ? "bg-black text-white"
+            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+        }`}
         onClick={() => onChange("m")}
       >
-        מטר
+        מטרים
       </button>
       <button
-        className={`btn btn-sm ${
-          unit === "ft" ? "btn-primary" : "btn-outline"
+        className={`px-4 py-2 rounded-full text-sm transition ${
+          unit === "ft"
+            ? "bg-black text-white"
+            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
         }`}
         onClick={() => onChange("ft")}
       >

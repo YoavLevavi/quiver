@@ -28,4 +28,54 @@ export const SPOTS = [
     image:
       "https://ynet-pic1.yit.co.il/picserver5/wcm_upload/2022/06/21/BJE71oZJ5c/20220621_102152.jpg",
   },
+  {
+    name: "תל אביב, חוף הילטון",
+    lat: 32.079899,
+    lng: 34.787588,
+    image:
+      "https://upload.wikimedia.org/wikipedia/commons/5/57/Hilton_Beach_Tel_Aviv.jpg",
+  },
+  {
+    name: "תל אביב, חוף המרבי",
+    lat: 32.051,
+    lng: 34.747,
+    image:
+      "https://upload.wikimedia.org/wikipedia/commons/a/a4/Maravi_Beach_Tel_Aviv.jpg",
+  },
+  {
+    name: "תל אביב, חוף דולפינריום",
+    lat: 32.0892,
+    lng: 34.7824,
+    image:
+      "https://upload.wikimedia.org/wikipedia/commons/0/0a/Dolphinarium_Beach.jpg",
+  },
+
+  {
+    name: "חיפה, חוף בת גלים (Backdoor)",
+    lat: 32.02394786679634,
+    lng: 34.73921728398227,
+    image:
+      "https://upload.wikimedia.org/wikipedia/commons/7/73/Bat_Galim_Haifa.jpg",
+  },
+  {
+    name: "בת ים",
+    lat: 32.0465,
+    lng: 34.7572,
+    image:
+      "https://www.ourtripapp.com/wp-content/uploads/2023/03/big_e5c48954507c7bb854c77442759de729.jpg",
+  },
+  {
+    name: "מכמורת",
+    lat: 32.40704135644245,
+    lng: 34.867655753317344,
+    image:
+      "https://familytrips.co.il/wp-content/uploads/elementor/thumbs/WhatsApp-Image-2022-07-06-at-10.41.19-qa7uxw4ygh5qydngrafhh0qos9ibdxq1scjnnpsq00.jpeg",
+  },
+  {
+    name: "קיסריה, ארובות (Arubot)",
+    lat: 32.51305476470064,
+    lng: 34.8955653808597,
+    image:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/%D7%A7%D7%99%D7%A1%D7%A8%D7%99%D7%94_%D7%94%D7%A2%D7%AA%D7%99%D7%A7%D7%94.jpg/1280px-%D7%A7%D7%99%D7%A1%D7%A8%D7%99%D7%94_%D7%94%D7%A2%D7%AA%D7%99%D7%A7%D7%94.jpg",
+  },
 ];
