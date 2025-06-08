@@ -6,6 +6,7 @@ import {
   YAxis,
   LabelList,
   ResponsiveContainer,
+  CartesianGrid,
 } from "recharts";
 
 // Always show the wave height above the bar
@@ -29,7 +30,10 @@ const WaveLabel = ({ x, y, value, width }) => {
 const ForecastChart = ({ data, unit }) => {
   if (!data || data.length === 0) return null;
 
-  const maxY = unit === "ft" ? 10 : 3; // fixed max Y axis
+  const maxY = unit === "ft" ? 10 : 6;
+  const ticks =
+    unit === "ft" ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] : [1, 2, 3, 4, 5, 6];
+
   const suffix = unit === "ft" ? "פיט" : "מ׳";
 
   const chartData = data
@@ -37,7 +41,9 @@ const ForecastChart = ({ data, unit }) => {
       const date = new Date(d.day);
       if (isNaN(date)) return null;
 
-      const weekday = date.toLocaleDateString("he-IL", { weekday: "long" }); // שבת
+      const weekday = date
+        .toLocaleDateString("he-IL", { weekday: "short" })
+        .replace("יום ", ""); // שבת
       const formattedDate = date
         .toLocaleDateString("he-IL", {
           day: "2-digit",
@@ -66,17 +72,31 @@ const ForecastChart = ({ data, unit }) => {
         </p>
       </div>
 
-      <ResponsiveContainer width="100%" height={240}>
-        <BarChart data={[...chartData].reverse()}>
+      <ResponsiveContainer width="100%" height={240} >
+        <BarChart data={[...chartData].reverse()} barCategoryGap="15%">
+          <CartesianGrid
+            stroke="#e5e7eb"
+            strokeDasharray="3 3"
+            vertical={false}
+            horizontal={true}
+          />
           <XAxis
             dataKey="day"
-            axisLine={false}
-            tickLine={false}
-            tick={{ fontSize: 13 }}
+            tickFormatter={(value) => {
+              const [weekday, date] = value.split(" ");
+              return `${weekday}\n${date}`;
+            }}
+            tick={{
+              fontSize: 12,
+              textAnchor: "middle",
+            }}
+            interval={0}
+            height={50}
           />
           <YAxis
-            domain={[0, 10]}
-            ticks={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
+            domain={[0, maxY]}
+            ticks={ticks}
+            interval={0} // Show all ticks
             orientation="right"
             tick={{ fontSize: 12 }}
             tickLine={false}
