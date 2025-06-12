@@ -1,20 +1,21 @@
+/**
+ * SurfboardsCarousel component fetches and displays a grid of surfboard cards.
+ *
+ * - Fetches a list of surfboards (limited to 12) from the store on mount.
+ * - Shows a loading indicator while data is being fetched.
+ * - Renders a responsive grid of SurfboardCard components for each surfboard.
+ *
+ * @component
+ * @returns {JSX.Element} The rendered carousel of surfboard cards or a loading indicator.
+ */
 import React, { useEffect } from "react";
 import useSurfboardStore from "../../store/useSurfboardStore";
 import SurfboardCard from "./SurfboardCard";
 import LoadingIndicator from "../UI/LoadingIndicator";
 
-/**
- * Displays a carousel/grid of surfboards fetched from the store.
- *
- * Fetches surfboards on mount and displays them in a responsive grid layout.
- * Shows a loading indicator while data is being fetched.
- *
- * @component
- *
- * @returns {JSX.Element} The rendered surfboards carousel component.
- */
 function SurfboardsCarousel() {
-  const { surfboards, loading, fetchSurfboards } = useSurfboardStore();
+  const { surfboards, loading, fetchSurfboards, deleteSurfboard } =
+    useSurfboardStore();
 
   useEffect(() => {
     fetchSurfboards({ limitTo: 12 });
@@ -41,6 +42,7 @@ function SurfboardsCarousel() {
               seller={surfboard.seller}
               description={surfboard.description}
               brand={surfboard.brand}
+              onDelete={() => deleteSurfboard(surfboard.id)}
             />
           ))}
         </div>

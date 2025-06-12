@@ -3,6 +3,7 @@ import useSurfboardStore from "../../store/useSurfboardStore";
 import InputField from "../UI/InputField";
 import { X, Image, Plus } from "lucide-react"; // Lucide icons for better visuals
 import { CATEGORIES } from "../../utils/surfboardHelpers";
+import SubTitle1 from "../Text/SubTitle1";
 
 const initialForm = {
   category: "",
@@ -104,241 +105,235 @@ function UploadSurfboardForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 rounded-2xl">
-      <div className="container mx-auto px-4">
-        <div className="max-w-2xl mx-auto">
-          <div className="bg-white rounded-2xl shadow-xl p-8">
-            <h1 className="text-2xl font-bold mb-4">הוספת גלשן חדש</h1>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {success && (
-                <div className="alert alert-success">הגלשן פורסם בהצלחה!</div>
-              )}
+    <div className="py-6 rounded-2xl">
+      <SubTitle1 bold={true} className="mb-4">
+        הוספת גלשן חדש 🏄🏼‍♂️
+      </SubTitle1>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {success && (
+          <div className="alert alert-success">הגלשן פורסם בהצלחה!</div>
+        )}
 
-              {/* Categories */}
-              <div>
-                <label className="block mb-1 ">קטגוריה</label>
-                <select
-                  name="category"
-                  className="select select-bordered w-full"
-                  required
-                  value={formData.category ?? ""}
-                  onChange={handleChange}
-                >
-                  {CATEGORIES.map((cat) => (
-                    <option key={cat.value} value={cat.value}>
-                      {cat.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
+        {/* Categories */}
+        <div>
+          <label className="block mb-1 ">קטגוריה</label>
+          <select
+            name="category"
+            className="select select-bordered w-full"
+            required
+            value={formData.category ?? ""}
+            onChange={handleChange}
+          >
+            {CATEGORIES.map((cat) => (
+              <option key={cat.value} value={cat.value}>
+                {cat.label}
+              </option>
+            ))}
+          </select>
+        </div>
 
-              {/* Brand/Model/Color */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <InputField
-                  name="brand"
-                  label="מותג"
-                  value={formData.brand ?? ""}
-                  onChange={handleChange}
-                  required
-                />
-                <InputField
-                  name="model"
-                  label="מודל"
-                  value={formData.model ?? ""}
-                  onChange={handleChange}
-                  required
-                />
-                <InputField
-                  name="color"
-                  label="צבע"
-                  value={formData.color ?? ""}
-                  onChange={handleChange}
-                />
-              </div>
+        {/* Brand/Model/Color */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <InputField
+            name="brand"
+            label="מותג"
+            value={formData.brand ?? ""}
+            onChange={handleChange}
+            required
+          />
+          <InputField
+            name="model"
+            label="מודל"
+            value={formData.model ?? ""}
+            onChange={handleChange}
+            required
+          />
+          <InputField
+            name="color"
+            label="צבע"
+            value={formData.color ?? ""}
+            onChange={handleChange}
+          />
+        </div>
 
-              {/* Length/Width/Volume */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <InputField
-                  name="size"
-                  label="אורך (ft)"
-                  type="number"
-                  value={formData.size ?? ""}
-                  onChange={handleChange}
-                  required
-                />
-                <InputField
-                  name="volume"
-                  label="נפח (L)"
-                  type="number"
-                  value={formData.volume ?? ""}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+        {/* Length/Width/Volume */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <InputField
+            name="size"
+            label="אורך (ft)"
+            type="number"
+            value={formData.size ?? ""}
+            onChange={handleChange}
+            required
+          />
+          <InputField
+            name="volume"
+            label="נפח (L)"
+            type="number"
+            value={formData.volume ?? ""}
+            onChange={handleChange}
+            required
+          />
+        </div>
 
-              {/* Fin Setup / Fin System */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <InputField
-                  name="finSetup"
-                  label="סטאפ חרבות"
-                  type="number"
-                  value={formData.finSetup ?? ""}
-                  onChange={handleChange}
-                />
-                <div>
-                  <label className="block mb-1">סוג בית החרבות</label>
-                  <select
-                    name="finSystem"
-                    className="select select-bordered w-full"
-                    value={formData.finSystem ?? ""}
-                    onChange={handleChange}
-                  >
-                    <option value="">בחר</option>
-                    <option value="FCS II">FCS II</option>
-                    <option value="Futures">Futures</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block mb-1 ">טכנולוגיה</label>
-                  <select
-                    name="technology"
-                    className="select select-bordered w-full"
-                    value={formData.technology ?? ""}
-                    onChange={handleChange}
-                  >
-                    <option value="">בחר</option>
-                    <option value="PU">PU</option>
-                    <option value="Epoxy">אפוקסי</option>
-                    <option value="Soft">סופט</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Location / Price */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <InputField
-                  name="location"
-                  label="מיקום"
-                  value={formData.location ?? ""}
-                  onChange={handleChange}
-                  required
-                />
-                <InputField
-                  name="price"
-                  label="מחיר (₪)"
-                  type="number"
-                  value={formData.price ?? ""}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              {/* Status */}
-              <div>
-                <select
-                  name="status"
-                  className="select select-bordered w-full"
-                  value={formData.status ?? ""}
-                  onChange={handleChange}
-                >
-                  <option value="available">זמין</option>
-                  <option value="sold">נמכר</option>
-                </select>
-              </div>
-
-              {/* Description */}
-              <div>
-                <label className="block mb-1">תיאור</label>
-                <textarea
-                  name="description"
-                  className="textarea textarea-bordered w-full"
-                  rows={4}
-                  value={formData.description ?? ""}
-                  onChange={handleChange}
-                  placeholder="תאר את מצב הגלשן, פגמים, שיפוצים, היסטוריה..."
-                ></textarea>
-              </div>
-
-              {/* Images */}
-              <div>
-                <label className="block mb-2 font-medium">תמונות</label>
-                <div className="flex flex-wrap gap-4 mb-3">
-                  {previews.map((url, index) => (
-                    <div
-                      key={index}
-                      className={`relative w-24 h-24 border rounded-lg overflow-hidden group ${
-                        index === formData.coverIndex
-                          ? "ring-2 ring-blue-400"
-                          : ""
-                      }`}
-                    >
-                      <img
-                        src={url}
-                        alt={`גלשן ${index + 1}`}
-                        className="w-full h-full object-cover"
-                        onClick={() => setCover(index)}
-                        style={{ cursor: "pointer" }}
-                        title="תמונה ראשית"
-                      />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-opacity">
-                        <button
-                          type="button"
-                          className="text-white mb-1 p-1"
-                          onClick={() => setCover(index)}
-                          title="תמונה ראשית"
-                        >
-                          <Image className="w-4 h-4" />
-                        </button>
-                        <button
-                          type="button"
-                          className="text-white p-1 hover:text-red-500"
-                          onClick={() => removeImage(index)}
-                          title="הסר תמונה"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      </div>
-                      {index === formData.coverIndex && (
-                        <div className="absolute bottom-0 inset-x-0 bg-blue-500/90 text-white text-xs text-center py-0.5">
-                          תמונה ראשית
-                        </div>
-                      )}
-                    </div>
-                  ))}
-
-                  {/* Add image button */}
-                  <label className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:border-blue-400 transition">
-                    <input
-                      type="file"
-                      name="images"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                      multiple
-                      className="hidden"
-                    />
-                    <Plus className="w-8 h-8 text-gray-400" />
-                  </label>
-                </div>
-                <div className="text-xs text-gray-500">
-                  העלה תמונות ברורות מזוויות שונות. לחץ על תמונה כדי להפוך אותה
-                  לתמונה ראשית.
-                </div>
-              </div>
-
-              {/* Submit buttons */}
-              <div className="flex justify-end space-x-4 pt-4">
-                <button
-                  className="btn btn-primary"
-                  type="submit"
-                  disabled={uploading}
-                >
-                  {uploading ? "מעלה..." : "פרסם"}
-                </button>
-              </div>
-            </form>
+        {/* Fin Setup / Fin System */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <InputField
+            name="finSetup"
+            label="סטאפ חרבות"
+            type="number"
+            value={formData.finSetup ?? ""}
+            onChange={handleChange}
+          />
+          <div>
+            <label className="block mb-1">סוג בית החרבות</label>
+            <select
+              name="finSystem"
+              className="select select-bordered w-full"
+              value={formData.finSystem ?? ""}
+              onChange={handleChange}
+            >
+              <option value="">בחר</option>
+              <option value="FCS II">FCS II</option>
+              <option value="Futures">Futures</option>
+            </select>
+          </div>
+          <div>
+            <label className="block mb-1 ">טכנולוגיה</label>
+            <select
+              name="technology"
+              className="select select-bordered w-full"
+              value={formData.technology ?? ""}
+              onChange={handleChange}
+            >
+              <option value="">בחר</option>
+              <option value="PU">PU</option>
+              <option value="Epoxy">אפוקסי</option>
+              <option value="Soft">סופט</option>
+            </select>
           </div>
         </div>
-      </div>
+
+        {/* Location / Price */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <InputField
+            name="location"
+            label="מיקום"
+            value={formData.location ?? ""}
+            onChange={handleChange}
+            required
+          />
+          <InputField
+            name="price"
+            label="מחיר (₪)"
+            type="number"
+            value={formData.price ?? ""}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        {/* Status */}
+        <div>
+          <select
+            name="status"
+            className="select select-bordered w-full"
+            value={formData.status ?? ""}
+            onChange={handleChange}
+          >
+            <option value="available">זמין</option>
+            <option value="sold">נמכר</option>
+          </select>
+        </div>
+
+        {/* Description */}
+        <div>
+          <label className="block mb-1">תיאור</label>
+          <textarea
+            name="description"
+            className="textarea textarea-bordered w-full"
+            rows={4}
+            value={formData.description ?? ""}
+            onChange={handleChange}
+            placeholder="תאר את מצב הגלשן, פגמים, שיפוצים, היסטוריה..."
+          ></textarea>
+        </div>
+
+        {/* Images */}
+        <div>
+          <label className="block mb-2 font-medium">תמונות</label>
+          <div className="flex flex-wrap gap-4 mb-3">
+            {previews.map((url, index) => (
+              <div
+                key={index}
+                className={`relative w-24 h-24 border rounded-lg overflow-hidden group ${
+                  index === formData.coverIndex ? "ring-2 ring-blue-400" : ""
+                }`}
+              >
+                <img
+                  src={url}
+                  alt={`גלשן ${index + 1}`}
+                  className="w-full h-full object-cover"
+                  onClick={() => setCover(index)}
+                  style={{ cursor: "pointer" }}
+                  title="תמונה ראשית"
+                />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-opacity">
+                  <button
+                    type="button"
+                    className="text-white mb-1 p-1"
+                    onClick={() => setCover(index)}
+                    title="תמונה ראשית"
+                  >
+                    <Image className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    className="text-white p-1 hover:text-red-500"
+                    onClick={() => removeImage(index)}
+                    title="הסר תמונה"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+                {index === formData.coverIndex && (
+                  <div className="absolute bottom-0 inset-x-0 bg-blue-500/90 text-white text-xs text-center py-0.5">
+                    תמונה ראשית
+                  </div>
+                )}
+              </div>
+            ))}
+
+            {/* Add image button */}
+            <label className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:border-blue-400 transition">
+              <input
+                type="file"
+                name="images"
+                accept="image/*"
+                onChange={handleImageChange}
+                multiple
+                className="hidden"
+              />
+              <Plus className="w-8 h-8 text-gray-400" />
+            </label>
+          </div>
+          <div className="text-xs text-gray-500">
+            העלה תמונות ברורות מזוויות שונות. לחץ על תמונה כדי להפוך אותה לתמונה
+            ראשית.
+          </div>
+        </div>
+
+        {/* Submit buttons */}
+        <div className="flex justify-end space-x-4 pt-4">
+          <button
+            className="btn btn-primary"
+            type="submit"
+            disabled={uploading}
+          >
+            {uploading ? "מעלה..." : "פרסם"}
+          </button>
+        </div>
+      </form>
     </div>
   );
 }

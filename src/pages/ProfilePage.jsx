@@ -133,7 +133,7 @@ function Profile() {
           </ul>
         </div>
 
-        <div className="flex-3/4 rounded-box">
+        <div className="flex-3/4 rounded-box px-6">
           <Outlet />
         </div>
       </div>

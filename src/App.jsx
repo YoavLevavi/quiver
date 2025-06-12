@@ -1,17 +1,17 @@
 import { useEffect } from "react";
-import Home from "./pages/Home";
-import Login from "./pages/Login";
+import HomePage from "./pages/HomePage";
+import LoginPage from "./pages/LoginPage";
 import { BrowserRouter, Routes, Route } from "react-router";
 import useAuthStore from "./store/useAuthStore";
-import Profile from "./pages/Profile";
+import Profile from "./pages/ProfilePage";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ProtectedRoute from "./components/ProtectedRoute";
 import EditUserComp from "./components/User/EditUserComp";
 import SurfboardsCarousel from "./components/Surfboard/SurfboardsCarousel";
 import UploadSurfboardForm from "./components/Surfboard/UploadSurfboardForm";
-import SurfboardDetails from "./pages/SurdboardDetails";
-import Forecast from "./pages/Forecast";
+import ForecastPage from "./pages/ForecastPage";
+import SurfboardDetailsPage from "./pages/SurfboardDetailsPage";
 
 function App() {
   const { initAuth } = useAuthStore();
@@ -25,10 +25,10 @@ function App() {
     <>
       <QueryClientProvider client={queryClient}>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="forecast" element={<Forecast />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/surfboards/:id" element={<SurfboardDetails />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="forecast" element={<ForecastPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/surfboards/:id" element={<SurfboardDetailsPage />} />
           {/* Protected routes for profile and surfboard management */}
           <Route
             path="/profile"

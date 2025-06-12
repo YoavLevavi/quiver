@@ -9,6 +9,7 @@ import {
   where,
   addDoc,
   serverTimestamp,
+  deleteDoc,
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage, auth } from "../utils/firebase";
@@ -125,6 +126,13 @@ const useSurfboardStore = create((set, get) => ({
       console.error("Error uploading surfboard:", error);
       return false;
     }
+  },
+
+  deleteSurfboard: async (surfboardId) => {
+    await deleteDoc(doc(db, "surfboards", surfboardId));
+    set((state) => ({
+      surfboards: state.surfboards.filter((s) => s.id !== surfboardId),
+    }));
   },
 }));
 

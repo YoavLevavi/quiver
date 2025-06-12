@@ -72,7 +72,7 @@ const ForecastChart = ({ data, unit }) => {
         </p>
       </div>
 
-      <ResponsiveContainer width="100%" height={240} >
+      <ResponsiveContainer width="100%" height={240}>
         <BarChart data={[...chartData].reverse()} barCategoryGap="15%">
           <CartesianGrid
             stroke="#e5e7eb"
@@ -81,18 +81,29 @@ const ForecastChart = ({ data, unit }) => {
             horizontal={true}
           />
           <XAxis
-            dataKey="day"
-            tickFormatter={(value) => {
-              const [weekday, date] = value.split(" ");
-              return `${weekday}\n${date}`;
-            }}
-            tick={{
-              fontSize: 12,
-              textAnchor: "middle",
-            }}
-            interval={0}
-            height={50}
-          />
+  dataKey="day"
+  interval={0}
+  height={60}
+  tick={({ x, y, payload }) => {
+    const [weekday, date] = payload.value.split(" ");
+    return (
+      <text
+        x={x}
+        y={y}
+        textAnchor="middle"
+        fill="#000"
+        fontSize="11"
+        fontFamily="inherit"
+      >
+        <tspan x={x} dy="0.5em">{weekday}</tspan>
+        <tspan x={x} dy="1.2em">{date}</tspan>
+      </text>
+    );
+  }}
+  axisLine={false}
+  tickLine={false}
+/>
+
           <YAxis
             domain={[0, maxY]}
             ticks={ticks}

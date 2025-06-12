@@ -1,28 +1,37 @@
+/**
+ * SurfboardCard component displays a summary card for a surfboard listing, including image, model, price, size, volume, condition, seller type, description, upload date, and seller information.
+ *
+ * @component
+ * @param {Object} props - Component props.
+ * @param {string} props.surfboardId - Unique identifier for the surfboard.
+ * @param {string} props.mainImage - URL of the surfboard's main image.
+ * @param {string} props.model - Model name of the surfboard.
+ * @param {boolean} props.isPrivate - Indicates if the seller is a private individual.
+ * @param {number} props.price - Price of the surfboard.
+ * @param {number|string} props.size - Size of the surfboard (in feet).
+ * @param {number|string} props.volume - Volume of the surfboard (in liters).
+ * @param {Date|string|number} props.uploadDate - Date when the surfboard was uploaded.
+ * @param {string} props.condition - Condition of the surfboard.
+ * @param {Object} props.seller - Firestore document reference for the seller.
+ * @param {string} props.description - Description of the surfboard.
+ * @param {string} props.brand - Brand of the surfboard.
+ * @param {function} props.onDelete - Callback function to handle surfboard deletion.
+ * @param {string} props.currentUserId - ID of the current user (for determining ownership).
+ * @returns {JSX.Element} The rendered surfboard card component.
+ */
 import React, { useEffect, useState } from "react";
-import { Heart } from "lucide-react";
-import clsx from "clsx";
+import { Heart, Trash2 } from "lucide-react";
 import { getDoc } from "firebase/firestore";
 import { formatDate, formatPrice } from "../../utils/format";
-import { getConditionLabel } from "../../utils/surfboardHelpers";
 import Title2 from "../Text/Title2";
 import TextLarge from "../Text/TextLarge";
 import TextBody from "../Text/TextBody";
 import TextSmall from "../Text/TextSmall";
 import { Link } from "react-router";
-/**
- * SurfboardCard displays information about a surfboard.
- * @param {Object} props
- * @param {string} props.mainImage - URL of the surfboard's main image.
- * @param {string} props.model - Model name of the surfboard.
- * @param {boolean} props.isPrivate - True if seller is private, false if shop.
- * @param {string|number} props.price - Price of the surfboard.
- * @param {string} props.size - Size of the surfboard.
- * @param {string} props.volume - Volume of the surfboard.
- * @param {Timestamp} props.uploadDate - Firestore Timestamp of posting.
- * @param {string} props.condition - Condition ("new", "liked new", "used").
- * @param {DocumentReference} props.seller - Firestore reference to seller.
- * @param {string} props.description - Description of the surfboard.
- */
+import SurfboardSellerTypeBadge from "./SurfboardSellerTypeBadge";
+import SurfboardConditionBadge from "./SurfboardConditionBadge";
+import SubTitle1 from "../Text/SubTitle1";
+
 function SurfboardCard({
   surfboardId,
   mainImage,
@@ -36,6 +45,8 @@ function SurfboardCard({
   seller,
   description,
   brand,
+  onDelete,
+  currentUserId,
 }) {
   const [sellerData, setSellerData] = useState(null);
 
@@ -51,10 +62,62 @@ function SurfboardCard({
     fetchSeller();
   }, [seller]);
 
+  // Check if the current user is the owner
+  const isOwner = sellerData && sellerData.uid === currentUserId;
+
   return (
     <Link to={`/surfboards/${surfboardId}`} className="no-underline">
-      <div className="card bg-base-100 shadow-sm max-w-xs">
-        {/* Surfboard main image */}
+      <div className="card bg-base-100 shadow-sm max-w-xs relative">
+        {/* Show delete button only if user is the owner */}
+        {onDelete && isOwner && (
+          <>
+            <button
+              type="button"
+              className="absolute btn btn-circle top-2 right-2  hover:bg-red-400 z-10"
+              onClick={(e) => {
+                e.preventDefault();
+                document
+                  .getElementById(`delete_modal_${surfboardId}`)
+                  .showModal();
+              }}
+              aria-label="מחק גלשן"
+            >
+              <Trash2 size={18} />
+            </button>
+
+            {/* Delete confirmation modal */}
+            <dialog id={`delete_modal_${surfboardId}`} className="modal">
+              <div
+                className="modal-box"
+                onClick={(e) => e.stopPropagation()} // Prevent click bubbling to Link
+              >
+                <SubTitle1 bold={true} className="mb-4">
+                  מחיקת גלשן
+                </SubTitle1>
+                <TextBody>האם אתה בטוח שברצונך למחוק את הגלשן?</TextBody>
+                <div className="modal-action">
+                  <form method="dialog" className="flex gap-2">
+                    <button className="btn" type="submit">
+                      ביטול
+                    </button>
+                    <button
+                      className="btn btn-error"
+                      type="button"
+                      onClick={() => {
+                        onDelete();
+                        document
+                          .getElementById(`delete_modal_${surfboardId}`)
+                          .close();
+                      }}
+                    >
+                      מחק
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </dialog>
+          </>
+        )}
         <figure className="relative w-full aspect-[9/16] overflow-hidden bg-gray-100">
           <img
             src={mainImage}
@@ -66,25 +129,8 @@ function SurfboardCard({
 
         <div className="card-body">
           <div className="flex flex-wrap gap-4">
-            {/* Condition badge */}
-            <span
-              className={clsx("badge p-3", {
-                "badge-success": condition === "new",
-                "badge-warning": condition === "liked new",
-                "badge-neutral": condition === "used",
-              })}
-            >
-              {getConditionLabel(condition)}
-            </span>
-            {/* Seller type badge */}
-            <span
-              className={clsx("badge p-3", {
-                "badge-primary": isPrivate === true,
-                "badge-secondary": isPrivate === false,
-              })}
-            >
-              {isPrivate ? "פרטי" : "חנות גלישה"}
-            </span>
+            <SurfboardConditionBadge condition={condition} />
+            <SurfboardSellerTypeBadge isPrivate={isPrivate} />
           </div>
 
           {/* Model and price */}

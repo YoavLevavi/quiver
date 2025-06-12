@@ -1,3 +1,16 @@
+/**
+ * Forecast component displays a surf forecast for a selected spot in Israel.
+ *
+ * Features:
+ * - Fetches and displays current weather, marine, and sun data for a selected spot.
+ * - Allows users to select a surf spot and toggle between metric and imperial units.
+ * - Shows key conditions (water/air temperature, wave height/period/direction, wind speed/direction, UV index, sunrise/sunset) in info cards.
+ * - Renders a daily max wave height chart.
+ * - Handles loading and error states gracefully.
+ *
+ * @component
+ * @returns {JSX.Element} The forecast page UI.
+ */
 import React, { useEffect, useState } from "react";
 import ForecastChart from "../components/Forecast/ForecastChart";
 import SpotSelector from "../components/Forecast/SpotSelector";
@@ -20,8 +33,13 @@ import {
   ThermometerSun,
   ArrowUp,
 } from "lucide-react";
+
+import {
+  fetchOneCallWeather,
+  fetchMarineData,
+  fetchSunData,
+} from "../api/forecastApi";
 import { toFeet, toKmh } from "../utils/conversions";
-import { DailyWavePeakChart } from "../components/Forecast/DailyWavePeakChart";
 
 const DEFAULT_SPOT = {
   name: "אשדוד, לידו",
@@ -54,33 +72,6 @@ function Forecast() {
     val !== null && val !== undefined
       ? `${val.toFixed(decimals)}${suffix}`
       : "N/A";
-
-  const fetchOneCallWeather = async () => {
-    const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY;
-    const res = await fetch(
-      `https://api.openweathermap.org/data/3.0/onecall?lat=${selectedSpot.lat}&lon=${selectedSpot.lng}&units=metric&exclude=minutely,alerts&appid=${apiKey}`
-    );
-    if (!res.ok) throw new Error("Failed to fetch OpenWeather data");
-    return await res.json();
-  };
-
-  const fetchMarineData = async () => {
-    const marineRes = await fetch(
-      `https://marine-api.open-meteo.com/v1/marine?latitude=${selectedSpot.lat}&longitude=${selectedSpot.lng}&hourly=sea_surface_temperature,wave_height,wave_period,wave_direction&timezone=auto`
-    );
-    const json = await marineRes.json();
-    if (!marineRes.ok) {
-      throw new Error(json.reason || "Failed to fetch marine data");
-    }
-    return json;
-  };
-
-  const fetchSunData = async () => {
-    const sunRes = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${selectedSpot.lat}&longitude=${selectedSpot.lng}&daily=sunrise,sunset,uv_index_max&timezone=auto`
-    );
-    return await sunRes.json();
-  };
 
   const extractCurrentValues = (weatherJson, marineJson, sunJson) => {
     const now = new Date().toISOString().slice(0, 13);
@@ -148,9 +139,9 @@ function Forecast() {
         setError(null);
 
         const [weatherRes, marineRes, sunRes] = await Promise.allSettled([
-          fetchOneCallWeather(),
-          fetchMarineData(),
-          fetchSunData(),
+          fetchOneCallWeather(selectedSpot.lat, selectedSpot.lng),
+          fetchMarineData(selectedSpot.lat, selectedSpot.lng),
+          fetchSunData(selectedSpot.lat, selectedSpot.lng),
         ]);
 
         extractCurrentValues(
@@ -266,6 +257,8 @@ function Forecast() {
           backgroundImage:
             "url(https://images.pexels.com/photos/1139541/pexels-photo-1139541.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2)",
         }}
+        role="img"
+        aria-label="רקע של ים וגלים"
       >
         <div className="flex flex-col gap-y-4">
           <Title1 variant="onDark">תחזית גלים בישראל</Title1>
@@ -284,10 +277,12 @@ function Forecast() {
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
+          role="img"
+          aria-label={`תמונה של ${selectedSpot.name}`}
         >
           <div className="absolute inset-0 bg-black/30 flex flex-col items-center justify-center px-6 py-8">
             <h2 className="text-2xl font-bold text-white mb-2 drop-shadow">
-              תחזית עבור {selectedSpot.name}
+              תחזית עבור <span>{selectedSpot.name}</span>
             </h2>
             <TextSmall className="text-white mb-4 drop-shadow">
               שנה מיקום כדי לראות תחזית בספוט אחר
@@ -296,39 +291,56 @@ function Forecast() {
               <SpotSelector
                 selected={selectedSpot}
                 onChange={setSelectedSpot}
+                aria-label="בחר מיקום"
               />
             </div>
           </div>
         </div>
       </div>
+
+      {/* Section: Unit toggle */}
       <div className="container flex flex-row justify-center py-6">
-        <UnitToggle unit={unit} onChange={setUnit} />
+        <UnitToggle
+          unit={unit}
+          onChange={setUnit}
+          aria-label="החלף יחידות מידה"
+        />
       </div>
-      <div className="container grid grid-cols-2 lg:grid-cols-4 gap-4 py-6">
+      {/* Section: Forecast chart and info cards */}
+      <div className="p-4 max-w-4xl mx-auto">
+        {error && (
+          <div
+            className="alert alert-error my-4"
+            role="alert"
+            aria-live="assertive"
+          >
+            {error === "No ocean/sea at this location"
+              ? "התחזית הימית אינה זמינה למיקום זה. בחר נקודה בים."
+              : error}
+          </div>
+        )}
+        {loading ? (
+          <LoadingIndicator aria-label="טוען נתונים..." />
+        ) : (
+          <>{!error && <ForecastChart data={data} unit={unit} />}</>
+        )}
+      </div>
+      {/* Section: Info cards */}
+      <div
+        className="container grid grid-cols-2 lg:grid-cols-4 gap-4 py-6"
+        role="list"
+        aria-label="כרטיסי מידע על תנאי הים"
+      >
         {infoCards.map((card, idx) => (
           <InfoCard
             key={idx}
             icon={card.icon}
             label={card.label}
             value={card.value}
+            aria-label={`${card.label}: ${card.value}`}
+            role="listitem"
           />
         ))}
-      </div>
-
-      <div className="p-4 max-w-4xl mx-auto">
-        {error && (
-          <div className="alert alert-error my-4">
-            {error === "No ocean/sea at this location"
-              ? "התחזית הימית אינה זמינה למיקום זה. בחר נקודה בים."
-              : error}
-          </div>
-        )}
-
-        {loading ? (
-          <LoadingIndicator />
-        ) : (
-          <>{!error && <ForecastChart data={data} unit={unit} />}</>
-        )}
       </div>
     </>
   );
