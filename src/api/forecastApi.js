@@ -40,3 +40,20 @@ export const fetchSunData = async (lat, lng) => {
   });
   return data;
 };
+
+// Fetches weather data for a specific latitude and longitude using the Open Meteo API
+export const fetchWeatherData = async (lat, lng) => {
+  const url = `https://api.open-meteo.com/v1/forecast`;
+
+  const { data } = await axios.get(url, {
+    params: {
+      latitude: lat,
+      longitude: lng,
+      hourly: "temperature_2m,wind_speed_10m,wind_direction_10m",
+      forecast_days: 7,
+      timezone: "auto",
+    },
+  });
+
+  return data;
+};

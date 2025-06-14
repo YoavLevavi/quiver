@@ -38,8 +38,10 @@ import {
   fetchOneCallWeather,
   fetchMarineData,
   fetchSunData,
+  fetchWeatherData,
 } from "../api/forecastApi";
 import { toFeet, toKmh } from "../utils/conversions";
+import DayForecastDetails from "../components/Forecast/DayForecastDetails";
 
 const DEFAULT_SPOT = {
   name: "אשדוד, לידו",
@@ -67,6 +69,8 @@ function Forecast() {
     airTemp: null,
   });
   const [error, setError] = useState(null);
+  const [marineData, setMarineData] = useState(null);
+  const [weatherData, setWeatherData] = useState(null);
 
   const formatValue = (val, decimals = 1, suffix = "") =>
     val !== null && val !== undefined
@@ -74,16 +78,28 @@ function Forecast() {
       : "N/A";
 
   const extractCurrentValues = (weatherJson, marineJson, sunJson) => {
-    const now = new Date().toISOString().slice(0, 13);
+    const now = new Date().toISOString().slice(0, 13); // YYYY-MM-DDTHH
     const marineIndex = marineJson.hourly?.time?.findIndex((t) =>
+      t.startsWith(now)
+    );
+    const weatherIndex = weatherJson.hourly?.time?.findIndex((t) =>
       t.startsWith(now)
     );
 
     const newConditions = {
-      airTemp: weatherJson.current?.temp ?? null,
-      windSpeed: weatherJson.current?.wind_speed ?? null,
-      windDirection: weatherJson.current?.wind_deg ?? null,
-      uvIndex: weatherJson.current?.uvi ?? null,
+      airTemp:
+        weatherIndex !== -1
+          ? weatherJson.hourly?.temperature_2m?.[weatherIndex]
+          : null,
+      windSpeed:
+        weatherIndex !== -1
+          ? weatherJson.hourly?.wind_speed_10m?.[weatherIndex]
+          : null,
+      windDirection:
+        weatherIndex !== -1
+          ? weatherJson.hourly?.wind_direction_10m?.[weatherIndex]
+          : null,
+      uvIndex: sunJson.daily?.uv_index_max?.[0] ?? null,
 
       sunrise: sunJson.daily?.sunrise?.[0] ?? null,
       sunset: sunJson.daily?.sunset?.[0] ?? null,
@@ -139,10 +155,17 @@ function Forecast() {
         setError(null);
 
         const [weatherRes, marineRes, sunRes] = await Promise.allSettled([
-          fetchOneCallWeather(selectedSpot.lat, selectedSpot.lng),
+          fetchWeatherData(selectedSpot.lat, selectedSpot.lng),
           fetchMarineData(selectedSpot.lat, selectedSpot.lng),
           fetchSunData(selectedSpot.lat, selectedSpot.lng),
         ]);
+
+        setMarineData(
+          marineRes.status === "fulfilled" ? marineRes.value : null
+        );
+        setWeatherData(
+          weatherRes.status === "fulfilled" ? weatherRes.value : null
+        );
 
         extractCurrentValues(
           weatherRes.status === "fulfilled" ? weatherRes.value : {},
@@ -159,6 +182,40 @@ function Forecast() {
 
     fetchForecast();
   }, [selectedSpot]);
+
+  // Group daily max wave heights for the chart
+  const [selectedDay, setSelectedDay] = useState(null);
+
+  // Get all available days from marineData
+  const availableDays =
+    marineData && marineData.hourly?.time
+      ? Array.from(
+          new Set(
+            marineData.hourly.time.map((timestamp) => timestamp.split("T")[0])
+          )
+        )
+      : [];
+
+  // Format date for display in Hebrew (e.g., "יום שישי, 14/6")
+  function formatHebrewDate(dateStr) {
+    const date = new Date(dateStr);
+    const daysOfWeek = [
+      "יום ראשון",
+      "יום שני",
+      "יום שלישי",
+      "יום רביעי",
+      "יום חמישי",
+      "יום שישי",
+      "יום שבת",
+    ];
+    return (
+      daysOfWeek[date.getDay()] +
+      ", " +
+      dateStr.slice(8, 10) +
+      "/" +
+      dateStr.slice(5, 7)
+    );
+  }
 
   const infoCards = [
     {
@@ -188,7 +245,10 @@ function Forecast() {
     {
       icon: <Clock />,
       label: "תקופת הגל",
-      value: formatValue(conditions.wavePeriod, 1, " שניות"),
+      value:
+        conditions.wavePeriod !== null && conditions.wavePeriod !== undefined
+          ? `${Math.round(conditions.wavePeriod)} שניות`
+          : "N/A",
     },
     {
       icon: (
@@ -247,6 +307,82 @@ function Forecast() {
         : "N/A",
     },
   ];
+
+  function buildDaySlots({ marineJson, weatherJson, dateStr, unit }) {
+    const marineTimes = marineJson.hourly?.time || [];
+    const waveHeights = marineJson.hourly?.wave_height || [];
+    const periods = marineJson.hourly?.wave_period || [];
+    const waveDirections = marineJson.hourly?.wave_direction || [];
+
+    const weatherTimes = weatherJson.hourly?.time || [];
+    const temps = weatherJson.hourly?.temperature_2m || [];
+    const windSpeeds = weatherJson.hourly?.wind_speed_10m || [];
+    const windDirections = weatherJson.hourly?.wind_direction_10m || [];
+
+    const weatherMap = new Map();
+    for (let i = 0; i < weatherTimes.length; i++) {
+      const hourKey = weatherTimes[i].slice(0, 13); // YYYY-MM-DDTHH
+      weatherMap.set(hourKey, {
+        temp: temps[i] ?? null,
+        windSpeed: windSpeeds[i] ?? null,
+        windDirection: windDirections[i] ?? null,
+      });
+    }
+
+    const hours = Array.from(
+      { length: 9 },
+      (_, i) => String(i * 2 + 6).padStart(2, "0") + ":00"
+    );
+
+    const slots = [];
+
+    for (let i = 0; i < marineTimes.length; i++) {
+      const [date, hour] = marineTimes[i].split("T");
+      if (date === dateStr && hours.includes(hour)) {
+        const hourKey = `${date}T${hour.slice(0, 2)}`;
+        const weatherData = weatherMap.get(hourKey) || {};
+
+        let waveHeightVal =
+          waveHeights[i] !== undefined ? waveHeights[i] : null;
+        if (waveHeightVal !== null && unit === "ft") {
+          waveHeightVal = (waveHeightVal * 3.28084).toFixed(1);
+        } else if (waveHeightVal !== null) {
+          waveHeightVal = waveHeightVal.toFixed(1);
+        }
+
+        const slot = {
+          time: hour,
+          temp: weatherData.temp ?? null,
+          waveHeight: waveHeightVal,
+          period:
+            periods[i] !== undefined && periods[i] !== null
+              ? Math.round(periods[i])
+              : null,
+          windSpeed:
+            weatherData.windSpeed !== null &&
+            weatherData.windSpeed !== undefined
+              ? (weatherData.windSpeed * 3.6).toFixed(1) // Convert m/s → km/h
+              : null,
+          windDirection: weatherData.windDirection ?? null,
+          waveDirection: waveDirections[i] ?? null,
+        };
+
+        slots.push(slot);
+      }
+    }
+
+    return slots;
+  }
+
+  // Only render if data is available
+  const slots =
+    marineData && weatherData && selectedDay
+      ? buildDaySlots({
+          marineJson: marineData,
+          weatherJson: weatherData,
+          dateStr: selectedDay,
+        })
+      : [];
 
   return (
     <>
@@ -324,6 +460,29 @@ function Forecast() {
         ) : (
           <>{!error && <ForecastChart data={data} unit={unit} />}</>
         )}
+      </div>
+
+      {/* Section: Detailed forecast */}
+      <div className="container py-8 overflow-x-auto">
+        <div className="flex flex-col gap-8 min-w-[350px]">
+          {availableDays.map((dateStr) => (
+            <DayForecastDetails
+              key={dateStr}
+              date={formatHebrewDate(dateStr)}
+              slots={
+                marineData && weatherData
+                  ? buildDaySlots({
+                      marineJson: marineData,
+                      weatherJson: weatherData,
+                      dateStr,
+                      unit,
+                    })
+                  : []
+              }
+              unit={unit}
+            />
+          ))}
+        </div>
       </div>
       {/* Section: Info cards */}
       <div

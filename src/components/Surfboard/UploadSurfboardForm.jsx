@@ -1,3 +1,32 @@
+/**
+ * UploadSurfboardForm component allows users to submit a new surfboard listing.
+ * 
+ * Features:
+ * - Handles form state for surfboard details such as category, brand, model, color, size, volume, description, images, fin setup, fin system, location, price, skill level, technology, and status.
+ * - Supports image upload with preview, cover image selection, and image removal.
+ * - Submits the form data to the surfboard store, placing the cover image first in the upload order.
+ * - Displays success and uploading states.
+ * 
+ * State:
+ * - formData: Object containing all surfboard form fields.
+ * - previews: Array of image preview URLs for display.
+ * - uploading: Boolean indicating if the upload is in progress.
+ * - success: Boolean indicating if the upload was successful.
+ * 
+ * Methods:
+ * - handleChange: Handles changes to input fields.
+ * - handleImageChange: Handles image file selection and preview generation.
+ * - setCover: Sets a selected image as the cover image.
+ * - removeImage: Removes a selected image and updates cover logic.
+ * - handleSubmit: Handles form submission, image ordering, and resets state on success.
+ * 
+ * UI:
+ * - Renders a form with fields for all surfboard attributes.
+ * - Provides image upload, preview, cover selection, and removal UI.
+ * - Displays feedback on successful upload.
+ * 
+ * @component
+ */
 import React, { useState } from "react";
 import useSurfboardStore from "../../store/useSurfboardStore";
 import InputField from "../UI/InputField";

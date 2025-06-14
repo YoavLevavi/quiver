@@ -102,14 +102,16 @@ function NavBar() {
 
         {/* Profile and Add Surfboard Button */}
         <div className="flex items-center gap-2">
-          {/* Desktop: Add Surfboard Button */}
-          <button
-            className="btn hidden sm:inline-flex"
-            onClick={() => setModalOpen(true)}
-            aria-label="הוסף גלשן חדש"
-          >
-            הוסף גלשן למכירה
-          </button>
+          {/* Desktop: Add Surfboard Button (only if logged in) */}
+          {user && (
+            <button
+              className="btn hidden sm:inline-flex"
+              onClick={() => setModalOpen(true)}
+              aria-label="הוסף גלשן חדש"
+            >
+              הוסף גלשן למכירה
+            </button>
+          )}
           {/* User Avatar/Profile */}
           <div className="flex-none">
             {user ? (
@@ -150,15 +152,17 @@ function NavBar() {
         </div>
       </div>
 
-      {/* Mobile FAB: Add Surfboard */}
-      <button
-        className="sm:hidden fixed bottom-6 left-6 z-50 btn btn-primary btn-circle shadow-lg flex items-center justify-center"
-        style={{ width: 56, height: 56 }}
-        onClick={() => setModalOpen(true)}
-        aria-label="הוסף גלשן חדש"
-      >
-        <Plus size={28} />
-      </button>
+      {/* Mobile FAB: Add Surfboard (only if logged in) */}
+      {user && (
+        <button
+          className="sm:hidden fixed bottom-6 left-6 z-50 btn btn-primary btn-circle shadow-lg flex items-center justify-center"
+          style={{ width: 56, height: 56 }}
+          onClick={() => setModalOpen(true)}
+          aria-label="הוסף גלשן חדש"
+        >
+          <Plus size={28} />
+        </button>
+      )}
 
       {/* Upload Surfboard Modal */}
       <UploadSurfboardModal
