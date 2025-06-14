@@ -264,11 +264,7 @@ function Forecast() {
     {
       icon: <Wind />,
       label: "מהירות הרוח",
-      value: formatValue(
-        conditions.windSpeed !== null ? toKmh(conditions.windSpeed) : null,
-        1,
-        ' קמ"ש'
-      ),
+      value: formatValue(conditions.windSpeed, 1, ' קמ"ש'),
     },
     {
       icon: (
@@ -361,7 +357,7 @@ function Forecast() {
           windSpeed:
             weatherData.windSpeed !== null &&
             weatherData.windSpeed !== undefined
-              ? (weatherData.windSpeed * 3.6).toFixed(1) // Convert m/s → km/h
+              ? weatherData.windSpeed // Already in kph from Open-Meteo
               : null,
           windDirection: weatherData.windDirection ?? null,
           waveDirection: waveDirections[i] ?? null,
@@ -417,10 +413,14 @@ function Forecast() {
           aria-label={`תמונה של ${selectedSpot.name}`}
         >
           <div className="absolute inset-0 bg-black/30 flex flex-col items-center justify-center px-6 py-8">
-            <h2 className="text-2xl font-bold text-white mb-2 drop-shadow">
-              תחזית עבור <span>{selectedSpot.name}</span>
-            </h2>
-            <TextSmall className="text-white mb-4 drop-shadow">
+            <SubTitle1
+              className="text-2xl font-bold text-white mb-2 drop-shadow"
+              variant="onDark"
+            >
+              תחזית עבור{" "}
+              <span className="font-normal">{selectedSpot.name}</span>
+            </SubTitle1>
+            <TextSmall className="text-white mb-4 drop-shadow" variant="onDark">
               שנה מיקום כדי לראות תחזית בספוט אחר
             </TextSmall>
             <div className="w-full max-w-sm">

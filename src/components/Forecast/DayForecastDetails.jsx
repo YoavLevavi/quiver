@@ -1,5 +1,7 @@
 import React, { useState, useRef, useLayoutEffect, useMemo } from "react";
 import { ArrowUpRight } from "lucide-react";
+import Title3 from "../Text/Title3";
+import TextSmall from "../Text/TextSmall";
 
 // Moved static configurations outside the component for clarity and performance
 const HOUR_TO_LABEL = {
@@ -55,6 +57,17 @@ function DayForecastDetails({ date, slots, unit = "m" }) {
     // we don't update maxHeight. This state should be rare.
   }, [rowsToShow]); // Re-run when the content to display (rowsToShow) changes
 
+  // Helper to convert wind speed to kph if needed
+  function getWindSpeedKph(windSpeed) {
+    if (
+      windSpeed === null ||
+      windSpeed === undefined ||
+      isNaN(Number(windSpeed))
+    )
+      return "—";
+    return Math.round(Number(windSpeed)); // Already in kph from Open-Meteo
+  }
+
   return (
     <div
       className="overflow-x-auto rounded-xl bg-white shadow p-4 my-4 transition-all duration-200 cursor-pointer hover:ring-2 hover:ring-primary/40"
@@ -65,79 +78,124 @@ function DayForecastDetails({ date, slots, unit = "m" }) {
       onKeyDown={(e) =>
         (e.key === "Enter" || e.key === " ") && setExpanded((prev) => !prev)
       }
-      style={{ userSelect: "none" }} // Prevents text selection on click
+      style={{ userSelect: "none" }}
     >
-      <h3 className="font-bold text-lg mb-4 text-right">{date}</h3>
+      <Title3 className="mb-4 text-right">{date}</Title3>
       <div
-        // This div handles the animation
         style={{
           maxHeight,
-          transition: "max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1)", // Smooth easing
-          overflow: "hidden", // Crucial for max-height animation
+          transition: "max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+          overflow: "hidden",
         }}
       >
-        <table ref={tableRef} className="w-full text-right">
+        <table ref={tableRef} className="w-full text-center">
           <thead>
             <tr className="border-b">
-              <th className="p-2">שעה</th>
-              <th className="p-2">טמפ' (°C)</th>
-              <th className="p-2">גובה גל {unit === "m" ? "(מ')" : "(פיט)"}</th>
-              <th className="p-2">פריוד (שניות)</th>
-              <th className="p-2">רוח (קמ"ש)</th>
-              <th className="p-2">כיוון רוח</th>
-              <th className="p-2">כיוון גל</th>
+              <th className="p-2">
+                <TextSmall bold>שעה</TextSmall>
+              </th>
+              <th className="p-2">
+                <TextSmall bold>טמפ' (°C)</TextSmall>
+              </th>
+              <th className="p-2" colSpan={2}>
+                <TextSmall bold>סוול</TextSmall>
+              </th>
+              <th className="p-2">
+                <TextSmall bold>רוח</TextSmall>
+              </th>
             </tr>
           </thead>
           <tbody>
             {rowsToShow.length === 0 ? (
               <tr>
-                <td colSpan={7} className="text-center text-gray-400 p-4">
-                  אין נתונים זמינים לשעות אלו
+                <td colSpan={5} className="text-center text-gray-400 p-4">
+                  <TextSmall variant="onLight">
+                    אין נתונים זמינים לשעות אלו
+                  </TextSmall>
                 </td>
               </tr>
             ) : (
               rowsToShow.map((slot) => (
-                <tr key={slot.time} className="border-b hover:bg-gray-50">
-                  <td className="p-2 font-bold">
+                <tr
+                  key={slot.time}
+                  className="border-b hover:bg-gray-50 transition group"
+                >
+                  <td className="p-2 font-bold align-middle">
                     {!expanded && HOUR_TO_LABEL[slot.time]
                       ? HOUR_TO_LABEL[slot.time]
                       : slot.time}
                   </td>
-                  <td className="p-2">{slot.airTemp ?? "—"}</td>
-                  <td className="p-2">{slot.waveHeight ?? "—"}</td>
-                  <td className="p-2">{slot.period ?? "—"}</td>
-                  <td className="p-2">{slot.windSpeed ?? "—"}</td>
-                  <td className="p-2">
-                    {slot.windDirection !== undefined &&
-                    slot.windDirection !== null ? (
-                      <span
-                        className="inline-block"
-                        style={{
-                          transform: `rotate(${slot.windDirection + 180}deg)`,
-                        }}
-                        title={`כיוון רוח ${slot.windDirection}°`}
-                      >
-                        <ArrowUpRight size={18} />
+                  <td className="p-2 align-middle">
+                    <div className="flex flex-col items-center">
+                      <span className="font-bold text-lg">
+                        {slot.airTemp ?? "—"}
                       </span>
-                    ) : (
-                      "—"
-                    )}
+                      <span className="text-xs text-gray-400">°C</span>
+                    </div>
                   </td>
-                  <td className="p-2">
-                    {slot.waveDirection !== undefined &&
-                    slot.waveDirection !== null ? (
-                      <span
-                        className="inline-block"
-                        style={{
-                          transform: `rotate(${slot.waveDirection + 180}deg)`,
-                        }}
-                        title={`כיוון גל ${slot.waveDirection}°`}
-                      >
-                        <ArrowUpRight size={18} />
+                  <td className="p-2 align-middle" colSpan={2}>
+                    <div className="flex items-center justify-center gap-4">
+                      <div className="rounded-md bg-gray-100 flex items-center px-4 py-2 min-w-[120px]">
+                        <span className="font-bold text-xl mr-2">
+                          {slot.waveHeight ?? "—"}
+                          <span className="text-base font-normal ml-1">
+                            {unit === "m" ? "m" : "ft"}
+                          </span>
+                        </span>
+                        <span className="font-bold text-xl mr-2">
+                          {slot.period ?? "—"}
+                          <span className="text-base font-normal ml-1">s</span>
+                        </span>
+                        <span className="ml-2 flex items-center">
+                          {slot.waveDirection !== undefined &&
+                          slot.waveDirection !== null ? (
+                            <ArrowUpRight
+                              size={28}
+                              className="text-gray-700"
+                              style={{
+                                transform: `rotate(${
+                                  slot.waveDirection + 180
+                                }deg)`,
+                              }}
+                            />
+                          ) : (
+                            <span className="text-gray-400 text-xl">—</span>
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="p-2 align-middle">
+                    <div className="flex items-center justify-center gap-3">
+                      <div className="flex flex-col items-end">
+                        <span className="font-bold text-2xl leading-tight">
+                          {getWindSpeedKph(slot.windSpeed)}
+                        </span>
+                        <span className="text-xs text-gray-400 -mt-1">
+                          {slot.windSpeed !== undefined &&
+                          slot.windSpeed !== null &&
+                          !isNaN(Number(slot.windSpeed))
+                            ? "קמ״ש"
+                            : ""}
+                        </span>
+                      </div>
+                      <span className="inline-flex items-center justify-center rounded-md bg-gray-100 w-12 h-12 ml-2">
+                        {slot.windDirection !== undefined &&
+                        slot.windDirection !== null ? (
+                          <ArrowUpRight
+                            size={28}
+                            className="text-gray-700"
+                            style={{
+                              transform: `rotate(${
+                                slot.windDirection + 180
+                              }deg)`,
+                            }}
+                          />
+                        ) : (
+                          <span className="text-gray-400 text-xl">—</span>
+                        )}
                       </span>
-                    ) : (
-                      "—"
-                    )}
+                    </div>
                   </td>
                 </tr>
               ))
@@ -145,9 +203,12 @@ function DayForecastDetails({ date, slots, unit = "m" }) {
           </tbody>
         </table>
       </div>
-      <div className="text-center text-xs text-gray-400 mt-2 select-none">
+      <TextSmall
+        className="text-center text-gray-400 mt-2 select-none"
+        variant="onLight"
+      >
         {expanded ? "לחץ כדי להסתיר שעות" : "לחץ כדי להציג את כל השעות"}
-      </div>
+      </TextSmall>
     </div>
   );
 }
