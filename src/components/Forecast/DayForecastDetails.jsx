@@ -2,6 +2,8 @@ import React, { useState, useRef, useLayoutEffect, useMemo } from "react";
 import { ArrowUpRight } from "lucide-react";
 import Title3 from "../Text/Title3";
 import TextSmall from "../Text/TextSmall";
+import TextBody from "../Text/TextBody";
+import TextLarge from "../Text/TextLarge";
 
 // Moved static configurations outside the component for clarity and performance
 const HOUR_TO_LABEL = {
@@ -89,19 +91,19 @@ function DayForecastDetails({ date, slots, unit = "m" }) {
         }}
       >
         <table ref={tableRef} className="w-full text-center">
-          <thead>
+          <thead className="hidden sm:table-header-group">
             <tr className="border-b">
               <th className="p-2">
                 <TextSmall bold>שעה</TextSmall>
-              </th>
-              <th className="p-2">
-                <TextSmall bold>טמפ' (°C)</TextSmall>
               </th>
               <th className="p-2" colSpan={2}>
                 <TextSmall bold>סוול</TextSmall>
               </th>
               <th className="p-2">
                 <TextSmall bold>רוח</TextSmall>
+              </th>
+              <th className="p-2">
+                <TextSmall bold>טמפ' (°C)</TextSmall>
               </th>
             </tr>
           </thead>
@@ -118,24 +120,27 @@ function DayForecastDetails({ date, slots, unit = "m" }) {
               rowsToShow.map((slot) => (
                 <tr
                   key={slot.time}
-                  className="border-b hover:bg-gray-50 transition group"
+                  className="border-b hover:bg-gray-50 transition group sm:table-row flex flex-row sm:flex-row w-full"
                 >
-                  <td className="p-2 font-bold align-middle">
+                  {/* Hour - vertical on mobile */}
+                  <td
+                    className="
+                      p-2 font-bold align-middle flex justify-center items-center
+                      sm:table-cell
+                      [writing-mode:vertical-lr] [text-orientation:mixed] sm:[writing-mode:unset] sm:[text-orientation:unset]
+                      h-16 min-w-6
+                    "
+                  >
                     {!expanded && HOUR_TO_LABEL[slot.time]
                       ? HOUR_TO_LABEL[slot.time]
                       : slot.time}
                   </td>
-                  <td className="p-2 align-middle">
-                    <div className="flex flex-col items-center">
-                      <span className="font-bold text-lg">
-                        {slot.airTemp ?? "—"}
-                      </span>
-                      <span className="text-xs text-gray-400">°C</span>
-                    </div>
-                  </td>
-                  <td className="p-2 align-middle" colSpan={2}>
+                  <td
+                    className="p-2 align-middle flex-1 sm:table-cell"
+                    colSpan={2}
+                  >
                     <div className="flex items-center justify-center gap-4">
-                      <div className="rounded-md bg-gray-100 flex items-center px-4 py-2 min-w-[120px]">
+                      <div className="rounded-md bg-primary-content 0 flex items-center px-4 py-2 min-w-[90px]">
                         <span className="font-bold text-xl mr-2">
                           {slot.waveHeight ?? "—"}
                           <span className="text-base font-normal ml-1">
@@ -165,7 +170,9 @@ function DayForecastDetails({ date, slots, unit = "m" }) {
                       </div>
                     </div>
                   </td>
-                  <td className="p-2 align-middle">
+
+                  {/* Wind */}
+                  <td className="p-2 align-middle flex-1 sm:table-cell">
                     <div className="flex items-center justify-center gap-3">
                       <div className="flex flex-col items-end">
                         <span className="font-bold text-2xl leading-tight">
@@ -195,6 +202,16 @@ function DayForecastDetails({ date, slots, unit = "m" }) {
                           <span className="text-gray-400 text-xl">—</span>
                         )}
                       </span>
+                    </div>
+                  </td>
+
+                  {/* Temp - last on mobile, hidden on mobile */}
+                  <td className="p-2 align-middle flex-1 sm:table-cell hidden sm:table-cell">
+                    <div className="flex flex-col items-center">
+                      <span className="font-bold text-lg">
+                        {slot.airTemp ?? "—"}
+                      </span>
+                      <span className="text-xs text-gray-400">°C</span>
                     </div>
                   </td>
                 </tr>
