@@ -35,15 +35,13 @@ self.addEventListener("activate", (event) => {
 // Fetch event: serve from cache, fallback to network
 self.addEventListener("fetch", (event) => {
   event.respondWith(
-    caches.match(event.request).then(
-      (response) =>
-        response ||
-        fetch(event.request).catch(() =>
-          // Optionally: return a fallback page/image for offline
-          caches.match("/index.html")
-        )
-    )
+    caches.match(event.request).then((response) => {
+      if (response) return response;
+      return fetch(event.request).catch(() => {
+        if (event.request.mode === "navigate") {
+          return caches.match("/index.html");
+        }
+      });
+    })
   );
 });
-
-

@@ -5,10 +5,16 @@ import App from "./App.jsx";
 import { AuthProvider } from "./contexts/AuthContext.jsx";
 import { BrowserRouter } from "react-router";
 
-// Add this near the top of src/main.jsx
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/service-worker.js");
+    navigator.serviceWorker
+      .register("/service-worker.js")
+      .then((reg) => {
+        console.log("Service worker registered:", reg);
+      })
+      .catch((err) => {
+        console.error("Service worker registration failed:", err);
+      });
   });
 }
 
