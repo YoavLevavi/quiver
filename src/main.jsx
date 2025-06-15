@@ -5,6 +5,13 @@ import App from "./App.jsx";
 import { AuthProvider } from "./contexts/AuthContext.jsx";
 import { BrowserRouter } from "react-router";
 
+// Add this near the top of src/main.jsx
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/service-worker.js");
+  });
+}
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AuthProvider>
