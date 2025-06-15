@@ -122,19 +122,23 @@ function DayForecastDetails({ date, slots, unit = "m" }) {
                   key={slot.time}
                   className="border-b hover:bg-gray-50 transition group sm:table-row flex flex-row sm:flex-row w-full"
                 >
-                  {/* Hour - vertical on mobile */}
+                  {/* Hour – vertical on mobile, top→bottom */}
                   <td
-                    className="
-                      p-2 font-bold align-middle flex justify-center items-center
-                      sm:table-cell
-                      [writing-mode:vertical-lr] [text-orientation:mixed] sm:[writing-mode:unset] sm:[text-orientation:unset]
-                      h-16 min-w-6
-                    "
+                    className=" p-2 font-bold align-middle flex justify-center items-center sm:table-cell
+    [writing-mode:vertical-lr]       
+    [text-orientation:mixed]         
+    sm:[writing-mode:unset] sm:[text-orientation:unset]
+    h-16 min-w-6
+  "
                   >
-                    {!expanded && HOUR_TO_LABEL[slot.time]
-                      ? HOUR_TO_LABEL[slot.time]
-                      : slot.time}
+                    <span>
+                      {!expanded && HOUR_TO_LABEL[slot.time]
+                        ? HOUR_TO_LABEL[slot.time]
+                        : slot.time}
+                    </span>
                   </td>
+
+                  {/* Wave - first two columns on mobile, first column on desktop */}
                   <td
                     className="p-2 align-middle flex-1 sm:table-cell"
                     colSpan={2}
@@ -170,7 +174,6 @@ function DayForecastDetails({ date, slots, unit = "m" }) {
                       </div>
                     </div>
                   </td>
-
                   {/* Wind */}
                   <td className="p-2 align-middle flex-1 sm:table-cell">
                     <div className="flex items-center justify-center gap-3">
@@ -204,7 +207,6 @@ function DayForecastDetails({ date, slots, unit = "m" }) {
                       </span>
                     </div>
                   </td>
-
                   {/* Temp - last on mobile, hidden on mobile */}
                   <td className="p-2 align-middle flex-1 sm:table-cell hidden sm:table-cell">
                     <div className="flex flex-col items-center">
