@@ -1,10 +1,38 @@
 import { create } from "zustand";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { db, auth } from "../utils/firebase";
 
 const useUserStore = create((set) => ({
   userData: null,
   loading: true,
+
+  // Create new user document
+  createUserDocument: async (user) => {
+    if (!user?.uid) return false;
+
+    try {
+      const userRef = doc(db, "users", user.uid);
+      await setDoc(userRef, {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+        first_name: "",
+        last_name: "",
+        gender: "",
+        location: "",
+        phone_number: "",
+        date_of_birth: "",
+        created_at: serverTimestamp(),
+        updated_at: serverTimestamp(),
+      });
+      console.log("✅ User document created successfully");
+      return true;
+    } catch (error) {
+      console.error("❌ Error creating user document:", error);
+      return false;
+    }
+  },
 
   // Fetch user data from Firestore
   fetchUserData: async () => {
@@ -39,7 +67,10 @@ const useUserStore = create((set) => ({
 
     try {
       const userRef = doc(db, "users", uid);
-      await updateDoc(userRef, updates);
+      await updateDoc(userRef, {
+        ...updates,
+        updated_at: serverTimestamp(),
+      });
       console.log("User data updated:", updates);
 
       // Refresh local userData after update

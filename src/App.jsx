@@ -12,6 +12,7 @@ import SurfboardsCarousel from "./components/Surfboard/SurfboardsCarousel";
 import UploadSurfboardForm from "./components/Surfboard/UploadSurfboardForm";
 import ForecastPage from "./pages/ForecastPage";
 import SurfboardDetailsPage from "./pages/SurfboardDetailsPage";
+import InstallPrompt from "./components/UI/InstallPrompt";
 
 function App() {
   const { initAuth } = useAuthStore();
@@ -23,6 +24,7 @@ function App() {
 
   return (
     <>
+      <InstallPrompt />
       <QueryClientProvider client={queryClient}>
         <Routes>
           <Route path="/" element={<HomePage />} />

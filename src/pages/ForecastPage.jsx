@@ -26,7 +26,6 @@ import {
   Waves,
   Clock,
   Wind,
-  Compass,
   SunMedium,
   Sunrise,
   Sunset,
@@ -35,12 +34,11 @@ import {
 } from "lucide-react";
 
 import {
-  fetchOneCallWeather,
   fetchMarineData,
   fetchSunData,
   fetchWeatherData,
 } from "../api/forecastApi";
-import { toFeet, toKmh } from "../utils/conversions";
+import { toFeet } from "../utils/conversions";
 import DayForecastDetails from "../components/Forecast/DayForecastDetails";
 
 const DEFAULT_SPOT = {
@@ -51,9 +49,9 @@ const DEFAULT_SPOT = {
     "https://www.ashdod.muni.il/media/16495077/%D7%AA%D7%9E%D7%95%D7%A0%D7%95%D7%AA-%D7%90%D7%95%D7%95%D7%99%D7%A8-%D7%9E%D7%99%D7%99%D7%A7-%D7%90%D7%93%D7%A8%D7%99-53.jpg",
 };
 
-function Forecast() {
+function ForecastPage() {
   const [selectedSpot, setSelectedSpot] = useState(DEFAULT_SPOT);
-  const [data, setData] = useState([]);
+  const [forecast, setForecast] = useState([]);
   const [loading, setLoading] = useState(true);
   const [unit, setUnit] = useState("m");
   const [conditions, setConditions] = useState({
@@ -77,79 +75,8 @@ function Forecast() {
       ? `${val.toFixed(decimals)}${suffix}`
       : "N/A";
 
-  const extractCurrentValues = (weatherJson, marineJson, sunJson) => {
-    const now = new Date().toISOString().slice(0, 13); // YYYY-MM-DDTHH
-    const marineIndex = marineJson.hourly?.time?.findIndex((t) =>
-      t.startsWith(now)
-    );
-    const weatherIndex = weatherJson.hourly?.time?.findIndex((t) =>
-      t.startsWith(now)
-    );
-
-    const newConditions = {
-      airTemp:
-        weatherIndex !== -1
-          ? weatherJson.hourly?.temperature_2m?.[weatherIndex]
-          : null,
-      windSpeed:
-        weatherIndex !== -1
-          ? weatherJson.hourly?.wind_speed_10m?.[weatherIndex]
-          : null,
-      windDirection:
-        weatherIndex !== -1
-          ? weatherJson.hourly?.wind_direction_10m?.[weatherIndex]
-          : null,
-      uvIndex: sunJson.daily?.uv_index_max?.[0] ?? null,
-
-      sunrise: sunJson.daily?.sunrise?.[0] ?? null,
-      sunset: sunJson.daily?.sunset?.[0] ?? null,
-      waterTemp:
-        marineIndex !== -1
-          ? marineJson.hourly?.sea_surface_temperature?.[marineIndex]
-          : null,
-      waveHeight:
-        marineIndex !== -1
-          ? marineJson.hourly?.wave_height?.[marineIndex]
-          : null,
-      wavePeriod:
-        marineIndex !== -1
-          ? marineJson.hourly?.wave_period?.[marineIndex]
-          : null,
-      waveDirection:
-        marineIndex !== -1
-          ? marineJson.hourly?.wave_direction?.[marineIndex]
-          : null,
-    };
-
-    setConditions(newConditions);
-
-    // ✅ Group hourly data by date and take max wave height per day
-    const timeArray = marineJson.hourly?.time || [];
-    const waveHeights = marineJson.hourly?.wave_height || [];
-
-    const dailyMaxMap = new Map();
-
-    timeArray.forEach((timestamp, i) => {
-      const dateOnly = timestamp.split("T")[0]; // e.g., "2025-06-08"
-      const height = waveHeights[i];
-
-      if (!dailyMaxMap.has(dateOnly) || height > dailyMaxMap.get(dateOnly)) {
-        dailyMaxMap.set(dateOnly, height);
-      }
-    });
-
-    const chartData = Array.from(dailyMaxMap.entries()).map(
-      ([dateStr, wave]) => ({
-        day: dateStr,
-        wave: wave.toFixed(2),
-      })
-    );
-
-    setData(chartData);
-  };
-
   useEffect(() => {
-    const fetchForecast = async () => {
+    const fetchForecastData = async () => {
       try {
         setLoading(true);
         setError(null);
@@ -160,18 +87,84 @@ function Forecast() {
           fetchSunData(selectedSpot.lat, selectedSpot.lng),
         ]);
 
-        setMarineData(
-          marineRes.status === "fulfilled" ? marineRes.value : null
-        );
-        setWeatherData(
-          weatherRes.status === "fulfilled" ? weatherRes.value : null
-        );
+        const weatherJson =
+          weatherRes.status === "fulfilled" ? weatherRes.value : null;
+        const marineJson =
+          marineRes.status === "fulfilled" ? marineRes.value : null;
+        const sunJson = sunRes.status === "fulfilled" ? sunRes.value : {};
 
-        extractCurrentValues(
-          weatherRes.status === "fulfilled" ? weatherRes.value : {},
-          marineRes.status === "fulfilled" ? marineRes.value : {},
-          sunRes.status === "fulfilled" ? sunRes.value : {}
-        );
+        if (marineJson?.error || weatherJson?.error) {
+          setError("התחזית הימית אינה זמינה למיקום זה. בחר נקודה בים.");
+          setLoading(false);
+          return;
+        }
+
+        setMarineData(marineJson);
+        setWeatherData(weatherJson);
+
+        if (weatherJson && marineJson && sunJson) {
+          const now = new Date().toISOString().slice(0, 13);
+          const marineIndex = marineJson.hourly?.time?.findIndex((t) =>
+            t.startsWith(now)
+          );
+          const weatherIndex = weatherJson.hourly?.time?.findIndex((t) =>
+            t.startsWith(now)
+          );
+
+          setConditions({
+            airTemp:
+              weatherIndex !== -1
+                ? weatherJson.hourly?.temperature_2m?.[weatherIndex]
+                : null,
+            windSpeed:
+              weatherIndex !== -1
+                ? weatherJson.hourly?.wind_speed_10m?.[weatherIndex]
+                : null,
+            windDirection:
+              weatherIndex !== -1
+                ? weatherJson.hourly?.wind_direction_10m?.[weatherIndex]
+                : null,
+            uvIndex: sunJson.daily?.uv_index_max?.[0] ?? null,
+            sunrise: sunJson.daily?.sunrise?.[0] ?? null,
+            sunset: sunJson.daily?.sunset?.[0] ?? null,
+            waterTemp:
+              marineIndex !== -1
+                ? marineJson.hourly?.sea_surface_temperature?.[marineIndex]
+                : null,
+            waveHeight:
+              marineIndex !== -1
+                ? marineJson.hourly?.wave_height?.[marineIndex]
+                : null,
+            wavePeriod:
+              marineIndex !== -1
+                ? marineJson.hourly?.wave_period?.[marineIndex]
+                : null,
+            waveDirection:
+              marineIndex !== -1
+                ? marineJson.hourly?.wave_direction?.[marineIndex]
+                : null,
+          });
+        }
+
+        if (marineJson) {
+          const allDays = Array.from(
+            new Set(marineJson.hourly.time.map((t) => t.split("T")[0]))
+          );
+
+          const fullForecast = allDays.map((dateStr) => {
+            const slotsForDay = [];
+            marineJson.hourly.time.forEach((timestamp, i) => {
+              if (timestamp.startsWith(dateStr)) {
+                slotsForDay.push({
+                  time: timestamp.split("T")[1],
+                  waveHeight: marineJson.hourly.wave_height[i] ?? 0,
+                });
+              }
+            });
+            return { date: dateStr, slots: slotsForDay };
+          });
+          setForecast(fullForecast);
+        }
       } catch (err) {
         setError("שגיאה בטעינת התחזית");
         console.error("Error fetching forecast:", err);
@@ -180,23 +173,13 @@ function Forecast() {
       }
     };
 
-    fetchForecast();
+    fetchForecastData();
   }, [selectedSpot]);
 
-  // Group daily max wave heights for the chart
-  const [selectedDay, setSelectedDay] = useState(null);
+  const availableDays = marineData?.hourly?.time
+    ? Array.from(new Set(marineData.hourly.time.map((t) => t.split("T")[0])))
+    : [];
 
-  // Get all available days from marineData
-  const availableDays =
-    marineData && marineData.hourly?.time
-      ? Array.from(
-          new Set(
-            marineData.hourly.time.map((timestamp) => timestamp.split("T")[0])
-          )
-        )
-      : [];
-
-  // Format date for display in Hebrew (e.g., "יום שישי, 14/6")
   function formatHebrewDate(dateStr) {
     const date = new Date(dateStr);
     const daysOfWeek = [
@@ -208,13 +191,9 @@ function Forecast() {
       "יום שישי",
       "יום שבת",
     ];
-    return (
-      daysOfWeek[date.getDay()] +
-      ", " +
-      dateStr.slice(8, 10) +
-      "/" +
-      dateStr.slice(5, 7)
-    );
+    return `${daysOfWeek[date.getDay()]}, ${date.getDate()}/${
+      date.getMonth() + 1
+    }`;
   }
 
   const infoCards = [
@@ -246,7 +225,7 @@ function Forecast() {
       icon: <Clock />,
       label: "תקופת הגל",
       value:
-        conditions.wavePeriod !== null && conditions.wavePeriod !== undefined
+        conditions.wavePeriod !== null
           ? `${Math.round(conditions.wavePeriod)} שניות`
           : "N/A",
     },
@@ -304,82 +283,42 @@ function Forecast() {
     },
   ];
 
-  function buildDaySlots({ marineJson, weatherJson, dateStr, unit }) {
+  function buildDaySlots({ marineJson, weatherJson, dateStr }) {
     const marineTimes = marineJson.hourly?.time || [];
     const waveHeights = marineJson.hourly?.wave_height || [];
     const periods = marineJson.hourly?.wave_period || [];
     const waveDirections = marineJson.hourly?.wave_direction || [];
-
     const weatherTimes = weatherJson.hourly?.time || [];
     const temps = weatherJson.hourly?.temperature_2m || [];
     const windSpeeds = weatherJson.hourly?.wind_speed_10m || [];
     const windDirections = weatherJson.hourly?.wind_direction_10m || [];
 
     const weatherMap = new Map();
-    for (let i = 0; i < weatherTimes.length; i++) {
-      const hourKey = weatherTimes[i].slice(0, 13); // YYYY-MM-DDTHH
-      weatherMap.set(hourKey, {
-        temp: temps[i] ?? null,
-        windSpeed: windSpeeds[i] ?? null,
-        windDirection: windDirections[i] ?? null,
+    weatherTimes.forEach((time, i) => {
+      weatherMap.set(time, {
+        temp: temps[i],
+        windSpeed: windSpeeds[i],
+        windDirection: windDirections[i],
       });
-    }
-
-    const hours = Array.from(
-      { length: 9 },
-      (_, i) => String(i * 2 + 6).padStart(2, "0") + ":00"
-    );
+    });
 
     const slots = [];
-
-    for (let i = 0; i < marineTimes.length; i++) {
-      const [date, hour] = marineTimes[i].split("T");
-      if (date === dateStr && hours.includes(hour)) {
-        const hourKey = `${date}T${hour.slice(0, 2)}`;
-        const weatherData = weatherMap.get(hourKey) || {};
-
-        let waveHeightVal =
-          waveHeights[i] !== undefined ? waveHeights[i] : null;
-        if (waveHeightVal !== null && unit === "ft") {
-          waveHeightVal = (waveHeightVal * 3.28084).toFixed(1);
-        } else if (waveHeightVal !== null) {
-          waveHeightVal = waveHeightVal.toFixed(1);
-        }
-
-        const slot = {
-          time: hour,
-          temp: weatherData.temp ?? null,
-          waveHeight: waveHeightVal,
-          period:
-            periods[i] !== undefined && periods[i] !== null
-              ? Math.round(periods[i])
-              : null,
-          windSpeed:
-            weatherData.windSpeed !== null &&
-            weatherData.windSpeed !== undefined
-              ? weatherData.windSpeed // Already in kph from Open-Meteo
-              : null,
-          windDirection: weatherData.windDirection ?? null,
-          waveDirection: waveDirections[i] ?? null,
-        };
-
-        slots.push(slot);
+    marineTimes.forEach((time, i) => {
+      if (time.startsWith(dateStr)) {
+        const weatherDataForSlot = weatherMap.get(time) || {};
+        slots.push({
+          time: time.split("T")[1],
+          waveHeight: waveHeights[i],
+          period: periods[i],
+          waveDirection: waveDirections[i],
+          airTemp: weatherDataForSlot.temp,
+          windSpeed: weatherDataForSlot.windSpeed,
+          windDirection: weatherDataForSlot.windDirection,
+        });
       }
-    }
-
+    });
     return slots;
   }
-
-  // Only render if data is available
-  const slots =
-    marineData && weatherData && selectedDay
-      ? buildDaySlots({
-          marineJson: marineData,
-          weatherJson: weatherData,
-          dateStr: selectedDay,
-        })
-      : [];
-
   return (
     <>
       <NavBar />
@@ -439,23 +378,21 @@ function Forecast() {
           aria-label="החלף יחידות מידה"
         />
       </div>
-      {/* Section: Forecast chart and info cards */}
-      <div className="p-4 max-w-4xl mx-auto">
+
+      <div className="mx-2">
         {error && (
           <div
             className="alert alert-error my-4"
             role="alert"
             aria-live="assertive"
           >
-            {error === "No ocean/sea at this location"
-              ? "התחזית הימית אינה זמינה למיקום זה. בחר נקודה בים."
-              : error}
+            {error}
           </div>
         )}
         {loading ? (
           <LoadingIndicator aria-label="טוען נתונים..." />
         ) : (
-          <>{!error && <ForecastChart data={data} unit={unit} />}</>
+          <>{!error && <ForecastChart forecastData={forecast} unit={unit} />}</>
         )}
       </div>
 
@@ -501,4 +438,4 @@ function Forecast() {
   );
 }
 
-export default Forecast;
+export default ForecastPage;

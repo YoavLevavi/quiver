@@ -4,124 +4,226 @@ import {
   Bar,
   XAxis,
   YAxis,
-  LabelList,
   ResponsiveContainer,
-  CartesianGrid,
+  ReferenceLine,
+  Tooltip,
+  ReferenceArea,
 } from "recharts";
+import { toFeet } from "../../utils/conversions";
+import useResponsivePadding from "../../hooks/useResponsivePadding";
 
-// Always show the wave height above the bar
-const WaveLabel = ({ x, y, value, width }) => {
-  if (!value) return null;
+const ForecastChart = ({ forecastData, unit }) => {
+  const xAxisPadding = useResponsivePadding();
+  if (!forecastData || forecastData.length === 0) return null;
 
-  return (
-    <text
-      x={x + width / 2}
-      y={y - 10}
-      textAnchor="middle"
-      fill="#000"
-      fontSize={12}
-      fontWeight={500}
-    >
-      {value}
-    </text>
-  );
-};
+  const chartData = [];
+  const dayMarkers = [];
 
-const ForecastChart = ({ data, unit }) => {
-  if (!data || data.length === 0) return null;
+  // Calculate the global maximum wave height for normalization
+  let globalMax = 0;
 
-  const maxY = unit === "ft" ? 10 : 6;
-  const ticks =
-    unit === "ft" ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] : [1, 2, 3, 4, 5, 6];
-
-  const suffix = unit === "ft" ? "פיט" : "מ׳";
-
-  const chartData = data
-    .map((d) => {
-      const date = new Date(d.day);
-      if (isNaN(date)) return null;
-
-      const weekday = date
-        .toLocaleDateString("he-IL", { weekday: "short" })
-        .replace("יום ", ""); // שבת
-      const formattedDate = date
-        .toLocaleDateString("he-IL", {
-          day: "2-digit",
-          month: "2-digit",
-        })
-        .replace(/\./g, "/"); // ensure slash instead of dot
-
-      const height =
-        unit === "ft"
-          ? (parseFloat(d.wave) * 3.28084).toFixed(1)
-          : parseFloat(d.wave).toFixed(1);
-
-      return {
-        day: `${weekday} ${formattedDate}`, // שבת 14/06
-        wave: Number(height),
-      };
-    })
-    .filter(Boolean);
-
-  return (
-    <div className="rounded-xl p-6 bg-[#f6f6f6]" dir="rtl">
-      <div className="mb-3">
-        <h3 className="text-xl font-bold text-right">תחזית גובה גלים</h3>
-        <p className="text-sm text-gray-500 text-right">
-          גובה יומי מקסימלי ({suffix})
-        </p>
-      </div>
-
-      <ResponsiveContainer width="100%" height={240}>
-        <BarChart data={[...chartData].reverse()} barCategoryGap="15%">
-          <CartesianGrid
-            stroke="#e5e7eb"
-            strokeDasharray="3 3"
-            vertical={false}
-            horizontal={true}
-          />
-          <XAxis
-  dataKey="day"
-  interval={0}
-  height={60}
-  tick={({ x, y, payload }) => {
-    const [weekday, date] = payload.value.split(" ");
-    return (
-      <text
-        x={x}
-        y={y}
-        textAnchor="middle"
-        fill="#000"
-        fontSize="11"
-        fontFamily="inherit"
-      >
-        <tspan x={x} dy="0.5em">{weekday}</tspan>
-        <tspan x={x} dy="1.2em">{date}</tspan>
-      </text>
+  forecastData.forEach((day) => {
+    const relevantSlots = day.slots.filter((slot) =>
+      ["08:00", "12:00", "18:00"].includes(slot.time)
     );
-  }}
-  axisLine={false}
-  tickLine={false}
-/>
+    relevantSlots.forEach((slot) => {
+      const value = unit === "m" ? slot.waveHeight : toFeet(slot.waveHeight);
+      if (value > globalMax) globalMax = value;
+    });
+  });
 
-          <YAxis
-            domain={[0, maxY]}
-            ticks={ticks}
-            interval={0} // Show all ticks
-            orientation="right"
-            tick={{ fontSize: 12 }}
+  forecastData.forEach((day, i) => {
+    const startIndex = chartData.length;
+    const requiredTimes = ["08:00", "12:00", "18:00"];
+    const daySlots = day.slots.filter((slot) =>
+      requiredTimes.includes(slot.time)
+    );
+
+    if (daySlots.length < 3) {
+      console.log(`Skipping day: ${day.label} (missing slots)`);
+      return;
+    }
+
+    daySlots.forEach((slot, j) => {
+      const rawHeight =
+        unit === "m"
+          ? parseFloat(slot.waveHeight.toFixed(1))
+          : parseFloat(toFeet(slot.waveHeight).toFixed(1));
+
+      const normalizedHeight = parseFloat(
+        ((rawHeight / globalMax) * 10).toFixed(2) - 3
+      );
+
+      chartData.push({
+        x: startIndex + j,
+        time: slot.time,
+        wave: normalizedHeight, // נורמליזציה לצורך גובה
+        displayWave: rawHeight, // להצגה בלבד
+        dayMarkerRef: null,
+      });
+    });
+
+    const labelIndex = startIndex + 1;
+
+    const min =
+      unit === "m"
+        ? Math.min(...daySlots.map((s) => s.waveHeight)).toFixed(1)
+        : Math.min(...daySlots.map((s) => toFeet(s.waveHeight)))
+            .toString()
+            .split(".")[0];
+
+    const max =
+      unit === "m"
+        ? Math.max(...daySlots.map((s) => s.waveHeight)).toFixed(1)
+        : Math.max(...daySlots.map((s) => toFeet(s.waveHeight)))
+            .toString()
+            .split(".")[0];
+
+    const dateObj = new Date(day.date);
+    const dayLabel =
+      i === 0
+        ? "היום"
+        : dateObj
+            .toLocaleDateString("he-IL", { weekday: "long" })
+            .split(" ")[1];
+
+    const dateLabel = dateObj.toLocaleDateString("he-IL", {
+      day: "2-digit",
+      month: "2-digit",
+    });
+
+    const marker = {
+      startIndex,
+      endIndex: startIndex + 2,
+      labelIndex,
+      label: dayLabel,
+      date: dateLabel,
+      rangeLabel: `${min}-${max} ${unit === "m" ? "מ'" : "פ'"}`,
+    };
+
+    for (let k = startIndex; k <= startIndex + 2; k++) {
+      chartData[k].dayMarkerRef = marker;
+    }
+
+    dayMarkers.push(marker);
+  });
+
+  // Use responsive padding hook to adjust padding based on screen size.
+  return (
+    <div dir="rtl">
+      <ResponsiveContainer height={300}>
+        <BarChart
+          data={chartData}
+          barGap={0}
+          margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
+          barCategoryGap="10%"
+          style={{ transform: "scaleX(-1)" }}
+        >
+          <YAxis domain={[0, 10]} hide />
+
+          {dayMarkers.map((marker, index) => {
+            const isSaturday = marker.label.includes("שבת");
+            if (!isSaturday) return null;
+            return (
+              <ReferenceArea
+                key={`saturday-area-${index}`}
+                x1={marker.startIndex - 0.5}
+                x2={marker.endIndex + 0.5}
+                stroke="none"
+                fill="#f3f4f6"
+                fillOpacity={0.8}
+              />
+            );
+          })}
+
+          <XAxis
+            dataKey="x"
+            type="number"
+            padding={xAxisPadding}
+            tickCount={chartData.length}
             tickLine={false}
-            axisLine={false}
-            width={30}
+            axisLine={true}
+            height={80}
+            interval={0}
+            tick={({ x, y, payload }) => {
+              const fullData = chartData.find((d) => d.x === payload.value);
+              const marker = fullData?.dayMarkerRef;
+              const isMobile = window.innerWidth < 640; // פחות מ-sm
+              const isMeters = unit === "m";
+
+              return (
+                <g transform={`translate(${x}, ${y}) scale(-1, 1)`}>
+                  {marker && payload.value === marker.labelIndex && (
+                    <>
+                      {/* היום */}
+                      <text
+                        x={0}
+                        y={-200}
+                        textAnchor="middle"
+                        fill="#1f2937"
+                        fontSize={16}
+                        fontWeight={700}
+                      >
+                        {marker.label}
+                      </text>
+
+                      {/* תאריך */}
+                      <text
+                        x={0}
+                        y={-180}
+                        textAnchor="middle"
+                        fill="#6b7280"
+                        fontSize={14}
+                        fontWeight={500}
+                      >
+                        {marker.date}
+                      </text>
+
+                      {/* טווח גובה */}
+                      <text
+                        x={0}
+                        y={0}
+                        dy={20}
+                        textAnchor="middle"
+                        fill="#1f2937"
+                        fontSize={16}
+                        fontWeight={600}
+                      >
+                        {isMeters && isMobile ? (
+                          <>
+                            <tspan x={0} dy="20" fontSize={12}>
+                              {marker.rangeLabel.split(" ")[0]}
+                            </tspan>
+                            <tspan x={0} dy="20" fontSize={12} fill="#6b7280">
+                              {marker.rangeLabel.split(" ")[1]}
+                            </tspan>
+                          </>
+                        ) : (
+                          marker.rangeLabel
+                        )}
+                      </text>
+                    </>
+                  )}
+                </g>
+              );
+            }}
           />
-          <Bar
-            dataKey="wave"
-            radius={[8, 8, 0, 0]}
-            fill="#d1d5db"
-            isAnimationActive={false}
-          >
-            <LabelList content={<WaveLabel />} />
-          </Bar>
+
+          {dayMarkers.map((marker, index) => {
+            const lastBar = chartData.find((d, i) => i === marker.endIndex);
+            if (!lastBar) return null;
+
+            return (
+              <ReferenceLine
+                key={`group-divider-${index}`}
+                x={lastBar.x + 0.5}
+                stroke="#9ca3af"
+                strokeWidth={1}
+              />
+            );
+          })}
+
+          <Bar dataKey="wave" fill="#38bdf8" />
         </BarChart>
       </ResponsiveContainer>
     </div>

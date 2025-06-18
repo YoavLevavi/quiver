@@ -13,6 +13,27 @@ const HOUR_TO_LABEL = {
 };
 const COLLAPSED_HOURS = ["08:00", "14:00", "20:00"];
 
+/**
+ * Displays detailed hourly forecast data for a specific day, including wave, wind, and temperature information.
+ * Allows toggling between a collapsed and expanded view of available hourly slots, with animated transitions.
+ * Supports both desktop (table) and mobile (card) layouts.
+ *
+ * @component
+ * @param {Object} props
+ * @param {string} props.date - The date string to display as the section title.
+ * @param {Array<Object>} props.slots - Array of forecast slot objects for the day, each containing time and weather data.
+ * @param {"m"|"ft"} [props.unit="m"] - The unit for wave height display ("m" for meters, "ft" for feet).
+ *
+ * @example
+ * <DayForecastDetails
+ *   date="2024-06-10"
+ *   slots={[
+ *     { time: "08:00", air_temperature: 22, wave_height: 1.2, wave_period: 8, wave_direction: 120, wind_speed: 15, wind_direction: 90 },
+ *     // ...more slots
+ *   ]}
+ *   unit="m"
+ * />
+ */
 function DayForecastDetails({ date, slots, unit = "m" }) {
   // מיפוי שמות השדות מה-API לשמות נוחים לשימוש בקומפוננטה
   const normalizedSlots = useMemo(() => {
@@ -146,13 +167,18 @@ function DayForecastDetails({ date, slots, unit = "m" }) {
                     <div className="flex items-center justify-center gap-4">
                       <div className="rounded-md bg-primary-content 0 flex items-center px-4 py-2 min-w-[90px]">
                         <span className="font-bold text-xl mr-2">
-                          {slot.waveHeight ?? "—"}
+                          {slot.waveHeight !== undefined &&
+                          slot.waveHeight !== null
+                            ? Number(slot.waveHeight).toFixed(1)
+                            : "—"}
                           <span className="text-base font-normal ml-1">
                             {unit === "m" ? "m" : "ft"}
                           </span>
                         </span>
                         <span className="font-bold text-xl mr-2">
-                          {slot.period ?? "—"}
+                          {slot.period !== undefined && slot.period !== null
+                            ? Math.round(Number(slot.period))
+                            : "—"}
                           <span className="text-base font-normal ml-1">s</span>
                         </span>
                         <span className="ml-2 flex items-center">
@@ -221,6 +247,51 @@ function DayForecastDetails({ date, slots, unit = "m" }) {
             )}
           </tbody>
         </table>
+
+        {/* Mobile view - simplified card layout */}
+        <div className="card bg-base-100 shadow mb-2 p-3 flex flex-row items-center gap-3 sm:hidden">
+          {rowsToShow.length === 0 ? (
+            <div className="text-center text-gray-400 p-4 w-full">
+              <TextSmall variant="onLight">
+                אין נתונים זמינים לשעות אלו
+              </TextSmall>
+            </div>
+          ) : (
+            rowsToShow.map((slot) => (
+              <div
+                key={slot.time}
+                className="border-b last:border-b-0 w-full flex flex-row items-center py-2"
+              >
+                {/* Hour */}
+                <div className="font-bold text-primary text-xs [writing-mode:vertical-lr] [text-orientation:mixed]">
+                  {slot.time}
+                </div>
+                {/* Swell */}
+                <div className="flex flex-col items-center flex-1">
+                  <span className="font-bold text-xl">
+                    {slot.waveHeight !== undefined && slot.waveHeight !== null
+                      ? Number(slot.waveHeight).toFixed(1)
+                      : "—"}
+                  </span>
+                  <span className="text-xs">{unit === "m" ? "m" : "ft"}</span>
+                  <span className="text-xs">
+                    {slot.period !== undefined && slot.period !== null
+                      ? Math.round(Number(slot.period))
+                      : "—"}
+                    s
+                  </span>
+                </div>
+                {/* Wind */}
+                <div className="flex flex-col items-center flex-1">
+                  <span className="font-bold text-xl">
+                    {getWindSpeedKph(slot.windSpeed)}
+                  </span>
+                  <span className="text-xs">קמ״ש</span>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
       <TextSmall
         className="text-center text-gray-400 mt-2 select-none"

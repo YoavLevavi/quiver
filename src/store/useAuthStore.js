@@ -1,7 +1,8 @@
 // src/store/useAuthStore.js
 import { create } from "zustand";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../utils/firebase";
+import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
+import { auth, db } from "../utils/firebase";
 
 const useAuthStore = create((set) => ({
   //initial state
@@ -10,7 +11,36 @@ const useAuthStore = create((set) => ({
 
   //actions
   initAuth: () => {
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // Check if user document exists in Firestore
+        const userDocRef = doc(db, "users", user.uid);
+        const userDocSnap = await getDoc(userDocRef);
+
+        // If user document doesn't exist, create it
+        if (!userDocSnap.exists()) {
+          console.log("Creating new user document for:", user.displayName);
+          try {
+            await setDoc(userDocRef, {
+              uid: user.uid,
+              email: user.email,
+              displayName: user.displayName,
+              photoURL: user.photoURL,
+              first_name: "",
+              last_name: "",
+              gender: "",
+              location: "",
+              phone_number: "",
+              date_of_birth: "",
+              created_at: serverTimestamp(),
+              updated_at: serverTimestamp(),
+            });
+            console.log("✅ User document created successfully");
+          } catch (error) {
+            console.error("❌ Error creating user document:", error);
+          }
+        }
+      }
       set({ user, loading: false });
     });
   },
