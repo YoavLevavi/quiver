@@ -399,8 +399,6 @@ function Forecast() {
           </SubTitle1>
         </div>
       </div>
-
-      {/* Section: Location name + selector */}
       <div className="container">
         <div
           className="relative z-10 max-w-3xl mx-auto -mt-16 rounded-2xl overflow-hidden shadow-lg h-48"
@@ -434,7 +432,6 @@ function Forecast() {
         </div>
       </div>
 
-      {/* Section: Unit toggle */}
       <div className="container flex flex-row justify-center py-6">
         <UnitToggle
           unit={unit}
@@ -475,7 +472,6 @@ function Forecast() {
                       marineJson: marineData,
                       weatherJson: weatherData,
                       dateStr,
-                      unit,
                     })
                   : []
               }
