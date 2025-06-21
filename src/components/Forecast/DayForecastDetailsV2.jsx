@@ -24,7 +24,7 @@ function DayForecastDetailsV2({ date, slots, unit = "ft", tempUnit = "C" }) {
   );
 
   return (
-    <div>
+    <div className="overflow-hidden">
       <Title3 className="bg-base-200 p-4">{date}</Title3>
       <table className="table w-full text-center ">
         <thead className="bg-base-200">
