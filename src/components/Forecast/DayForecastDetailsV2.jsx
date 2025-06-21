@@ -162,9 +162,9 @@ function DayForecastDetailsV2({ date, slots, unit = "ft", tempUnit = "C" }) {
                   </td>
 
                   {/* Wind */}
-                  <td>
+                  <td className={`${windBgClass}`}>
                     <div
-                      className={`flex flex-col md:flex-row justify-center items-center gap-2 px-2 py-1 ${windBgClass}`}
+                      className={`flex flex-col md:flex-row justify-center items-center gap-2 px-2 py-1`}
                     >
                       <div className="flex items-baseline gap-2">
                         {/* Wind speed unit */}

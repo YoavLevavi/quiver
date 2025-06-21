@@ -346,7 +346,7 @@ function ForecastPage() {
         />
       </div>
 
-      <div className="mx-2 py-6">
+      <div className="mx-2">
         {error && (
           <div
             className="alert alert-error my-4"
