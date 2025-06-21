@@ -9,7 +9,7 @@ function SurfboardConditionBadge({ condition }) {
       <span
         className={clsx("badge p-3", {
           "badge-success": condition === "new",
-          "badge-warning": condition === "liked new",
+          "badge-warning": condition === "like new", // Fixed typo "liked new" to "like new"
           "badge-neutral": condition === "used",
         })}
       >
