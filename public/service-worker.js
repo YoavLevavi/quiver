@@ -5,6 +5,9 @@ const ASSETS_TO_CACHE = [
   "/",
   "/index.html",
   "/src/assets/quiver_logo_svg.svg",
+  "/icon512_maskable.png",
+  "/icon512_rounded.png",
+  "/manifest.json",
   // Add more assets as needed (e.g., CSS, JS bundles)
 ];
 
@@ -36,12 +39,14 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   event.respondWith(
     caches.match(event.request).then((response) => {
-      if (response) return response;
-      return fetch(event.request).catch(() => {
-        if (event.request.mode === "navigate") {
-          return caches.match("/index.html");
-        }
-      });
+      return (
+        response ||
+        fetch(event.request).catch(() => {
+          if (event.request.mode === "navigate") {
+            return caches.match("/offline.html");
+          }
+        })
+      );
     })
   );
 });

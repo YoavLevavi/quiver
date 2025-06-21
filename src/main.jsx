@@ -4,26 +4,51 @@ import "./styles/index.css";
 import App from "./App.jsx";
 import { AuthProvider } from "./contexts/AuthContext.jsx";
 import { BrowserRouter } from "react-router";
+import React from "react";
+import LoadingPage from "./components/UI/LoadingPage";
+import InstallPrompt from "./components/UI/InstallPrompt";
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker
-      .register("/service-worker.js")
-      .then((reg) => {
-        console.log("Service worker registered:", reg);
-      })
-      .catch((err) => {
-        console.error("Service worker registration failed:", err);
-      });
+    navigator.serviceWorker.register("/service-worker.js").then(
+      (registration) => {
+        console.log(
+          "Service Worker registered with scope:",
+          registration.scope
+        );
+      },
+      (error) => {
+        console.error("Service Worker registration failed:", error);
+      }
+    );
   });
 }
 
+function AppWrapper() {
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    // Simulate app initialization or data fetching
+    const timer = setTimeout(() => setIsLoading(false), 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return <LoadingPage />;
+  }
+
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </AuthProvider>
+  );
+}
+
 createRoot(document.getElementById("root")).render(
-  // <StrictMode>
-  <AuthProvider>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </AuthProvider>
-  // </StrictMode>
+  <>
+    <AppWrapper />
+    <InstallPrompt />
+  </>
 );

@@ -7,50 +7,92 @@ function isMobile() {
 
 export default function InstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [showPrompt, setShowPrompt] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
 
   useEffect(() => {
-    if (!isMobile()) return; // Only show on mobile devices
-    const handler = (e) => {
+    // Check if the device is iOS
+    const userAgent = window.navigator.userAgent;
+    const isIOSDevice = /iPhone|iPad|iPod/.test(userAgent);
+    setIsIOS(isIOSDevice);
+
+    if (isIOSDevice) {
+      setIsVisible(true);
+      return;
+    }
+
+    const handleBeforeInstallPrompt = (e) => {
+      console.log("beforeinstallprompt event fired");
       e.preventDefault();
       setDeferredPrompt(e);
-      setShowPrompt(true);
+      setIsVisible(true);
     };
-    window.addEventListener("beforeinstallprompt", handler);
-    return () => window.removeEventListener("beforeinstallprompt", handler);
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt
+      );
+    };
   }, []);
 
-  const handleInstall = () => {
+  const handleInstallClick = () => {
     if (deferredPrompt) {
       deferredPrompt.prompt();
-      deferredPrompt.userChoice.then(() => setShowPrompt(false));
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === "accepted") {
+          console.log("User accepted the install prompt");
+        } else {
+          console.log("User dismissed the install prompt");
+        }
+        setDeferredPrompt(null);
+        setIsVisible(false);
+      });
     }
   };
 
-  if (!showPrompt) return null;
+  const handleClose = () => {
+    setIsVisible(false);
+  };
+
+  if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-4 left-0 right-0 flex justify-center z-50 px-2">
-      <div className="card bg-base-100 border border-primary shadow-xl max-w-md w-full flex-row items-center p-3 gap-3">
-        <figure>
-          <img
-            src="/icon-192.png"
-            alt="Quiver"
-            className="w-12 h-12 rounded-xl border bg-primary"
-          />
-        </figure>
-        <div className="flex-1 text-right">
-          <div className="font-bold text-primary text-base">התקן את Quiver</div>
-          <div className="text-xs text-gray-500">
-            הוסף את Quiver למסך הבית שלך לחוויה מהירה ונוחה
-          </div>
+    <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+      <div className="bg-white rounded-lg shadow-lg p-6 w-11/12 max-w-md">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-bold">
+            {isIOS ? "הוסף למסך הבית" : "התקן את האפליקציה"}
+          </h2>
+          <button
+            className="text-gray-500 hover:text-gray-700"
+            onClick={handleClose}
+            aria-label="סגור"
+          >
+            ✕
+          </button>
         </div>
-        <button
-          className="btn btn-primary btn-sm font-bold"
-          onClick={handleInstall}
-        >
-          התקן
-        </button>
+        <div className="text-sm mb-4">
+          {isIOS ? (
+            <p>
+              להוספת האפליקציה למסך הבית, לחץ על כפתור השיתוף ולאחר מכן על "הוסף
+              למסך הבית".
+            </p>
+          ) : (
+            <p>התקן את האפליקציה לשימוש מהיר ונוח!</p>
+          )}
+        </div>
+        {!isIOS && (
+          <button
+            className="btn btn-primary w-full"
+            onClick={handleInstallClick}
+            aria-label="התקן את האפליקציה"
+          >
+            התקן עכשיו
+          </button>
+        )}
       </div>
     </div>
   );

@@ -27,6 +27,7 @@ import useSurfboardStore from "../store/useSurfboardStore";
 import NavBar from "../components/NavBar";
 import SurfboardImageGallery from "../components/Surfboard/SurfboardImageGallery";
 import SurfboardInfoDetails from "../components/Surfboard/SurfboardInfoDetails";
+import { ChevronRight } from "lucide-react";
 
 // --- קומפוננטת העמוד הראשית (עם שלד טעינה משופר) ---
 const SurfboardDetailsPage = () => {
@@ -92,6 +93,13 @@ const SurfboardDetailsPage = () => {
   return (
     <>
       <NavBar />
+      <div className="container py-6">
+        <button className="btn" onClick={() => window.history.back()}>
+          <ChevronRight />
+          חזור
+        </button>
+      </div>
+
       <div className="flex flex-col md:flex-row container py-6  gap-12 h-fit">
         <SurfboardImageGallery
           images={surfboard.images}

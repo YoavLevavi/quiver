@@ -39,7 +39,7 @@ import {
   fetchWeatherData,
 } from "../api/forecastApi";
 import { toFeet } from "../utils/conversions";
-import DayForecastDetailsV2 from "../components/Forecast/DayForecastDetailsV2";
+import DayForecastDetails from "../components/Forecast/DayForecastDetails";
 import { formatHebrewDate } from "../utils/format";
 import { buildDaySlots } from "../utils/forecastDataUtils";
 
@@ -367,7 +367,7 @@ function ForecastPage() {
       <div className="">
         <div className="flex flex-col">
           {availableDays.map((dateStr) => (
-            <DayForecastDetailsV2
+            <DayForecastDetails
               key={dateStr}
               date={formatHebrewDate(dateStr)}
               slots={

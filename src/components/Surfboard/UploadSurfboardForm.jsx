@@ -134,7 +134,7 @@ function UploadSurfboardForm() {
   };
 
   return (
-    <div className="py-6 rounded-2xl">
+    <div className="py-6 rounded-2xl w-full mx-auto p-6 rounded-2xl space-y-4 bg-base-200">
       <SubTitle1 bold={true} className="mb-4">
         הוספת גלשן חדש 🏄🏼‍♂️
       </SubTitle1>

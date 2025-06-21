@@ -118,11 +118,14 @@ function SurfboardCard({
             </dialog>
           </>
         )}
-        <figure className="relative w-full aspect-[9/16] overflow-hidden bg-gray-100">
+        {/* className="relative w-full aspect-[9/16] overflow-hidden bg-gray-100" */}
+
+        <figure className="rounded-t-lg">
           <img
             src={mainImage}
             alt={model}
-            className="absolute inset-0 w-full h-full object-cover"
+            // className="absolute inset-0 w-full h-full object-cover"
+            className="rounded-t-lg"
             loading="lazy"
           />
         </figure>
