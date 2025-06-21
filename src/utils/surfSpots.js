@@ -13,6 +13,14 @@ export const SPOTS = [
     lng: 34.63863686370215,
     image:
       "https://www.ashdod.muni.il/media/16495077/%D7%AA%D7%9E%D7%95%D7%A0%D7%95%D7%AA-%D7%90%D7%95%D7%95%D7%99%D7%A8-%D7%9E%D7%99%D7%99%D7%A7-%D7%90%D7%93%D7%A8%D7%99-53.jpg",
+    optimalConditions: {
+      optimalSwellDirections: [180, 220],
+      coastlineDirection: 270,
+      windShelter: {
+        N: "partial",
+        NE: "full",
+      },
+    },
   },
   {
     name: "ניצנים",
@@ -20,6 +28,14 @@ export const SPOTS = [
     lng: 34.60026661380782,
     image:
       "https://scontent.fsdv2-1.fna.fbcdn.net/v/t1.6435-9/86970221_861961024246103_8071923139094773760_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=86c6b0&_nc_ohc=_1ZKJdiPKhEQ7kNvwEium12&_nc_oc=AdkESf5VofA-x5LLVwJ7Ou5iwGXX5hmugs9PgKNj-LYP222MaEV7D9MQNOIJFkXFPsw&_nc_zt=23&_nc_ht=scontent.fsdv2-1.fna&_nc_gid=mxS6zyhYQmL_mmaIsQG9Mw&oh=00_AfPkrp-a8KsPqvR9IvqCx4M1pb_5lacLvmbt8bXccwdPbQ&oe=686C0005",
+    optimalConditions: {
+      optimalSwellDirections: [190, 230],
+      coastlineDirection: 280,
+      windShelter: {
+        NW: "partial",
+        W: "full",
+      },
+    },
   },
   {
     name: "אשקלון, דלילה",
@@ -27,6 +43,13 @@ export const SPOTS = [
     lng: 34.553989449671946,
     image:
       "https://ynet-pic1.yit.co.il/picserver5/wcm_upload/2022/06/21/BJE71oZJ5c/20220621_102152.jpg",
+    optimalConditions: {
+      optimalSwellDirections: [170, 210],
+      coastlineDirection: 260,
+      windShelter: {
+        SW: "full",
+      },
+    },
   },
   {
     name: "תל אביב, חוף הילטון",
@@ -76,6 +99,6 @@ export const SPOTS = [
     lat: 32.51305476470064,
     lng: 34.8955653808597,
     image:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/%D7%A7%D7%99%D7%A1%D7%A8%D7%99%D7%94_%D7%94%D7%A2%D7%AA%D7%99%D7%A7%D7%94.jpg/1280px-%D7%A7%D7%99%D7%A1%D7%A8%D7%99%D7%94_%D7%94%D7%A2%D7%AA%D7%99%D7%A7%D7%94.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/%D7%A7%D7%99%D7%A1%D7%A8%D7%99%D7%94_%D7%94%D7%A2%D7%AA%D7%99%D7%A7%D7%A8%D7%95%D7%AA.jpg/1280px-%D7%A7%D7%99%D7%A1%D7%A8%D7%99%D7%94_%D7%94%D7%A2%D7%AA%D7%99%D7%A7%D7%A8%D7%95%D7%AA.jpg",
   },
 ];

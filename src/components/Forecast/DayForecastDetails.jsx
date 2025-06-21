@@ -207,6 +207,9 @@ function DayForecastDetails({ date, slots, unit = "m" }) {
                         <span className="font-bold text-2xl leading-tight">
                           {getWindSpeedKph(slot.windSpeed)}
                         </span>
+
+
+                        {/* ------------------------------------------ */}
                         <span className="text-xs text-gray-400 -mt-1">
                           {slot.windSpeed !== undefined &&
                           slot.windSpeed !== null &&
@@ -214,6 +217,8 @@ function DayForecastDetails({ date, slots, unit = "m" }) {
                             ? "קמ״ש"
                             : ""}
                         </span>
+                        {/* ------------------------------------------ */}
+
                       </div>
                       <span className="inline-flex items-center justify-center rounded-md bg-gray-100 w-12 h-12 ml-2">
                         {slot.windDirection !== undefined &&

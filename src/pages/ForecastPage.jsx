@@ -39,7 +39,9 @@ import {
   fetchWeatherData,
 } from "../api/forecastApi";
 import { toFeet } from "../utils/conversions";
-import DayForecastDetails from "../components/Forecast/DayForecastDetails";
+import DayForecastDetailsV2 from "../components/Forecast/DayForecastDetailsV2";
+import { formatHebrewDate } from "../utils/format";
+import { buildDaySlots } from "../utils/forecastDataUtils";
 
 const DEFAULT_SPOT = {
   name: "אשדוד, לידו",
@@ -50,10 +52,15 @@ const DEFAULT_SPOT = {
 };
 
 function ForecastPage() {
+  // State to hold the selected spot
   const [selectedSpot, setSelectedSpot] = useState(DEFAULT_SPOT);
+  // State to hold the forecast data
   const [forecast, setForecast] = useState([]);
+  // State to manage loading state
   const [loading, setLoading] = useState(true);
+  // State to hold the selected unit (metric or imperial)
   const [unit, setUnit] = useState("m");
+  // State to hold the current conditions
   const [conditions, setConditions] = useState({
     waterTemp: null,
     waveHeight: null,
@@ -66,15 +73,20 @@ function ForecastPage() {
     sunset: null,
     airTemp: null,
   });
+  // State to hold error messages
   const [error, setError] = useState(null);
+  // State to hold marine and weather data
   const [marineData, setMarineData] = useState(null);
+  // State to hold weather data
   const [weatherData, setWeatherData] = useState(null);
 
+  // Helper function to format values with a suffix and decimals
   const formatValue = (val, decimals = 1, suffix = "") =>
     val !== null && val !== undefined
       ? `${val.toFixed(decimals)}${suffix}`
       : "N/A";
 
+  // Effect to fetch forecast data when the selected spot changes
   useEffect(() => {
     const fetchForecastData = async () => {
       try {
@@ -87,14 +99,18 @@ function ForecastPage() {
           fetchSunData(selectedSpot.lat, selectedSpot.lng),
         ]);
 
+        // Check if any of the fetches failed and handle errors
         const weatherJson =
           weatherRes.status === "fulfilled" ? weatherRes.value : null;
+        // Marine data might be null if the fetch failed
         const marineJson =
           marineRes.status === "fulfilled" ? marineRes.value : null;
-        const sunJson = sunRes.status === "fulfilled" ? sunRes.value : {};
+        // Sun data might be null if the fetch failed
+        const sunJson = sunRes.status === "fulfilled" ? sunRes.value : null;
 
+        // If any of the data is missing or has an error, set an error message
         if (marineJson?.error || weatherJson?.error) {
-          setError("התחזית הימית אינה זמינה למיקום זה. בחר נקודה בים.");
+          setError("התחזית הימית אינה זמינה למיקום זה. בחר נקודה אחרת.");
           setLoading(false);
           return;
         }
@@ -157,7 +173,9 @@ function ForecastPage() {
               if (timestamp.startsWith(dateStr)) {
                 slotsForDay.push({
                   time: timestamp.split("T")[1],
-                  waveHeight: marineJson.hourly.wave_height[i] ?? 0,
+                  waveHeight:
+                    Math.round((marineJson.hourly.wave_height[i] ?? 0) * 10) /
+                    10, // Round to the closest tenth
                 });
               }
             });
@@ -172,30 +190,15 @@ function ForecastPage() {
         setLoading(false);
       }
     };
-
     fetchForecastData();
   }, [selectedSpot]);
 
+  // Extract unique days from marine data for the detailed forecast
   const availableDays = marineData?.hourly?.time
     ? Array.from(new Set(marineData.hourly.time.map((t) => t.split("T")[0])))
     : [];
 
-  function formatHebrewDate(dateStr) {
-    const date = new Date(dateStr);
-    const daysOfWeek = [
-      "יום ראשון",
-      "יום שני",
-      "יום שלישי",
-      "יום רביעי",
-      "יום חמישי",
-      "יום שישי",
-      "יום שבת",
-    ];
-    return `${daysOfWeek[date.getDay()]}, ${date.getDate()}/${
-      date.getMonth() + 1
-    }`;
-  }
-
+  // Prepare info cards with icons and values
   const infoCards = [
     {
       icon: <Thermometer />,
@@ -282,43 +285,6 @@ function ForecastPage() {
         : "N/A",
     },
   ];
-
-  function buildDaySlots({ marineJson, weatherJson, dateStr }) {
-    const marineTimes = marineJson.hourly?.time || [];
-    const waveHeights = marineJson.hourly?.wave_height || [];
-    const periods = marineJson.hourly?.wave_period || [];
-    const waveDirections = marineJson.hourly?.wave_direction || [];
-    const weatherTimes = weatherJson.hourly?.time || [];
-    const temps = weatherJson.hourly?.temperature_2m || [];
-    const windSpeeds = weatherJson.hourly?.wind_speed_10m || [];
-    const windDirections = weatherJson.hourly?.wind_direction_10m || [];
-
-    const weatherMap = new Map();
-    weatherTimes.forEach((time, i) => {
-      weatherMap.set(time, {
-        temp: temps[i],
-        windSpeed: windSpeeds[i],
-        windDirection: windDirections[i],
-      });
-    });
-
-    const slots = [];
-    marineTimes.forEach((time, i) => {
-      if (time.startsWith(dateStr)) {
-        const weatherDataForSlot = weatherMap.get(time) || {};
-        slots.push({
-          time: time.split("T")[1],
-          waveHeight: waveHeights[i],
-          period: periods[i],
-          waveDirection: waveDirections[i],
-          airTemp: weatherDataForSlot.temp,
-          windSpeed: weatherDataForSlot.windSpeed,
-          windDirection: weatherDataForSlot.windDirection,
-        });
-      }
-    });
-    return slots;
-  }
   return (
     <>
       <NavBar />
@@ -338,7 +304,7 @@ function ForecastPage() {
           </SubTitle1>
         </div>
       </div>
-      
+
       <div className="container">
         <div
           className="relative z-10 max-w-3xl mx-auto -mt-16 rounded-2xl overflow-hidden shadow-lg h-48"
@@ -380,7 +346,7 @@ function ForecastPage() {
         />
       </div>
 
-      <div className="mx-2">
+      <div className="mx-2 py-6">
         {error && (
           <div
             className="alert alert-error my-4"
@@ -398,10 +364,10 @@ function ForecastPage() {
       </div>
 
       {/* Section: Detailed forecast */}
-      <div className="container py-8 overflow-x-auto">
-        <div className="flex flex-col gap-8 min-w-[350px]">
+      <div className="">
+        <div className="flex flex-col">
           {availableDays.map((dateStr) => (
-            <DayForecastDetails
+            <DayForecastDetailsV2
               key={dateStr}
               date={formatHebrewDate(dateStr)}
               slots={

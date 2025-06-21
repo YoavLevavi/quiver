@@ -148,7 +148,7 @@ const ForecastChart = ({ forecastData, unit }) => {
             tick={({ x, y, payload }) => {
               const fullData = chartData.find((d) => d.x === payload.value);
               const marker = fullData?.dayMarkerRef;
-              const isMobile = window.innerWidth < 640; // פחות מ-sm
+              const isMobile = window.innerWidth < 650; // פחות מ-sm
               const isMeters = unit === "m";
 
               return (
@@ -186,16 +186,13 @@ const ForecastChart = ({ forecastData, unit }) => {
                         dy={20}
                         textAnchor="middle"
                         fill="#1f2937"
-                        fontSize={16}
+                        fontSize={isMobile ? 12 : 16}
                         fontWeight={600}
                       >
                         {isMeters && isMobile ? (
                           <>
                             <tspan x={0} dy="20" fontSize={12}>
                               {marker.rangeLabel.split(" ")[0]}
-                            </tspan>
-                            <tspan x={0} dy="20" fontSize={12} fill="#6b7280">
-                              {marker.rangeLabel.split(" ")[1]}
                             </tspan>
                           </>
                         ) : (

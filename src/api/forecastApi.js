@@ -1,5 +1,15 @@
 import axios from "axios";
 
+/**
+ * Fetches weather data from the OpenWeather One Call API for a given latitude and longitude.
+ *
+ * @async
+ * @function fetchOneCallWeather
+ * @param {number} lat - The latitude of the location.
+ * @param {number} lng - The longitude of the location.
+ * @returns {Promise<Object>} The weather data returned by the API.
+ * @throws {Error} If the API request fails.
+ */
 export const fetchOneCallWeather = async (lat, lng) => {
   const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY;
   const url = `https://api.openweathermap.org/data/3.0/onecall`;
@@ -15,6 +25,16 @@ export const fetchOneCallWeather = async (lat, lng) => {
   return data;
 };
 
+/**
+ * Fetches marine data from the Open-Meteo Marine API for a given latitude and longitude.
+ *
+ * @async
+ * @function fetchMarineData
+ * @param {number} lat - The latitude of the location.
+ * @param {number} lng - The longitude of the location.
+ * @returns {Promise<Object>} The marine data returned by the API.
+ * @throws {Error} If the API request fails.
+ */
 export const fetchMarineData = async (lat, lng) => {
   const url = `https://marine-api.open-meteo.com/v1/marine`;
   const { data } = await axios.get(url, {
@@ -28,6 +48,16 @@ export const fetchMarineData = async (lat, lng) => {
   return data;
 };
 
+/**
+ * Fetches sun-related data (sunrise, sunset, UV index) from the Open-Meteo API for a given latitude and longitude.
+ *
+ * @async
+ * @function fetchSunData
+ * @param {number} lat - The latitude of the location.
+ * @param {number} lng - The longitude of the location.
+ * @returns {Promise<Object>} The sun-related data returned by the API.
+ * @throws {Error} If the API request fails.
+ */
 export const fetchSunData = async (lat, lng) => {
   const url = `https://api.open-meteo.com/v1/forecast`;
   const { data } = await axios.get(url, {
@@ -41,7 +71,16 @@ export const fetchSunData = async (lat, lng) => {
   return data;
 };
 
-// Fetches weather data for a specific latitude and longitude using the Open Meteo API
+/**
+ * Fetches general weather data (temperature, wind speed, wind direction) from the Open-Meteo API for a given latitude and longitude.
+ *
+ * @async
+ * @function fetchWeatherData
+ * @param {number} lat - The latitude of the location.
+ * @param {number} lng - The longitude of the location.
+ * @returns {Promise<Object>} The weather data returned by the API.
+ * @throws {Error} If the API request fails.
+ */
 export const fetchWeatherData = async (lat, lng) => {
   const url = `https://api.open-meteo.com/v1/forecast`;
 
