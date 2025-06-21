@@ -5,7 +5,7 @@ import clsx from "clsx";
 function SurfboardConditionBadge({ condition }) {
   return (
     <>
-      {/* Condition badge */}
+      {/* Condition badge   */}
       <span
         className={clsx("badge p-3", {
           "badge-success": condition === "new",
