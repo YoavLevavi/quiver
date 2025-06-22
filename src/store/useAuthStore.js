@@ -21,9 +21,10 @@ const useAuthStore = create((set) => ({
         if (!userDocSnap.exists()) {
           console.log("Creating new user document for:", user.displayName);
           try {
+            // Add email field to the user document during creation
             await setDoc(userDocRef, {
               uid: user.uid,
-              email: user.email,
+              email: user.email, 
               displayName: user.displayName,
               photoURL: user.photoURL,
               first_name: "",
@@ -48,6 +49,11 @@ const useAuthStore = create((set) => ({
   logout: async () => {
     await auth.signOut();
     set({ user: null });
+  },
+
+  getCurrentUserId: () => {
+    const state = useAuthStore.getState();
+    return state.user ? state.user.uid : null;
   },
 }));
 

@@ -1,17 +1,44 @@
-export const formatPrice = (price) => `₪${price.toLocaleString("he-IL")}`;
+import DOMPurify from "dompurify";
 
-export const formatDate = (timestamp) =>
-  timestamp.toDate().toLocaleDateString("he-IL").replace(/\D/g, "/");
+export const formatPrice = (price) => {
+  // Validate and sanitize price input
+  const numPrice = parseFloat(price);
+  if (isNaN(numPrice) || numPrice < 0) {
+    return "₪0";
+  }
+  return `₪${numPrice.toLocaleString("he-IL")}`;
+};
+
+export const formatDate = (timestamp) => {
+  // Validate timestamp input
+  if (!timestamp || typeof timestamp.toDate !== "function") {
+    return "תאריך לא זמין";
+  }
+  return timestamp.toDate().toLocaleDateString("he-IL").replace(/\D/g, "/");
+};
 
 export const formatDayLabel = (date, isToday) => {
   if (isToday) return "היום";
-  return new Date(date)
+
+  // Validate date input
+  const validDate = new Date(date);
+  if (isNaN(validDate.getTime())) {
+    return "תאריך לא תקין";
+  }
+
+  return validDate
     .toLocaleDateString("he-IL", { weekday: "long" })
     .split(" ")[1];
 };
 
 export const formatDateLabel = (date) => {
-  return new Date(date).toLocaleDateString("he-IL", {
+  // Validate date input
+  const validDate = new Date(date);
+  if (isNaN(validDate.getTime())) {
+    return "תאריך לא תקין";
+  }
+
+  return validDate.toLocaleDateString("he-IL", {
     day: "2-digit",
     month: "2-digit",
   });
@@ -20,7 +47,14 @@ export const formatDateLabel = (date) => {
 // Formats a date string to a Hebrew date format
 // Example: "2023-10-01" -> "יום ראשון, 1/10"
 export const formatHebrewDate = (dateStr) => {
-  const date = new Date(dateStr);
+  // Sanitize and validate date string input
+  const sanitizedDateStr = DOMPurify.sanitize(String(dateStr));
+  const date = new Date(sanitizedDateStr);
+
+  if (isNaN(date.getTime())) {
+    return "תאריך לא תקין";
+  }
+
   const daysOfWeek = [
     "יום ראשון",
     "יום שני",

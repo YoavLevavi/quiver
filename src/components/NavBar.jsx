@@ -124,7 +124,7 @@ function NavBar() {
                   <div className="w-10 rounded-full">
                     <img
                       alt={user.displayName || "User"}
-                      src={user.photoURL || "/default-avatar.png"}
+                      src={user.photoURL || "./assets/default-avatar.png"}
                     />
                   </div>
                 </div>

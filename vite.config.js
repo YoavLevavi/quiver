@@ -42,7 +42,7 @@ export default defineConfig({
     },
   },
   server: {
-    allowedHosts: ["1368-79-178-123-54.ngrok-free.app", "localhost"],
+    allowedHosts: ["3317-79-178-123-54.ngrok-free.app", "localhost"],
   },
   base: "./",
   build: {

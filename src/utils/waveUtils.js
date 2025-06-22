@@ -42,13 +42,5 @@ export const calculateWaveQualityRating = (slot) => {
     rating -= 1;
     if (windSpeed > 20) rating -= 1; // very messy
   }
-  // Cross-shore wind is neutral (no bonus/penalty)
-  console.log("Wave quality rating calculation:", {
-    waveHeight,
-    swellPeriod,
-    windDirection,
-    windSpeed,
-    initialRating: rating,
-  });
   return Math.max(1, Math.min(5, rating));
 };

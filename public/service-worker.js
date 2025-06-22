@@ -50,6 +50,3 @@ self.addEventListener("fetch", (event) => {
     })
   );
 });
-
-// Register the service worker
-navigator.serviceWorker.register("/service-worker.js");

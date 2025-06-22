@@ -9,7 +9,7 @@ function UserCardComp({ user, userData, className }) {
       <div className="flex flex-row p-6 gap-6">
         <div className="avatar">
           <div className="w-24 rounded-full">
-            <img src={user.photoURL} />
+            <img src={user.photoURL || "../assets/default-avatar.png"} />
           </div>
         </div>
         <div className="flex flex-col items-start">

@@ -1,30 +1,30 @@
 /**
  * UploadSurfboardForm component allows users to submit a new surfboard listing.
- * 
+ *
  * Features:
  * - Handles form state for surfboard details such as category, brand, model, color, size, volume, description, images, fin setup, fin system, location, price, skill level, technology, and status.
  * - Supports image upload with preview, cover image selection, and image removal.
  * - Submits the form data to the surfboard store, placing the cover image first in the upload order.
  * - Displays success and uploading states.
- * 
+ *
  * State:
  * - formData: Object containing all surfboard form fields.
  * - previews: Array of image preview URLs for display.
  * - uploading: Boolean indicating if the upload is in progress.
  * - success: Boolean indicating if the upload was successful.
- * 
+ *
  * Methods:
  * - handleChange: Handles changes to input fields.
  * - handleImageChange: Handles image file selection and preview generation.
  * - setCover: Sets a selected image as the cover image.
  * - removeImage: Removes a selected image and updates cover logic.
  * - handleSubmit: Handles form submission, image ordering, and resets state on success.
- * 
+ *
  * UI:
  * - Renders a form with fields for all surfboard attributes.
  * - Provides image upload, preview, cover selection, and removal UI.
  * - Displays feedback on successful upload.
- * 
+ *
  * @component
  */
 import React, { useState } from "react";
@@ -33,6 +33,7 @@ import InputField from "../UI/InputField";
 import { X, Image, Plus } from "lucide-react"; // Lucide icons for better visuals
 import { CATEGORIES } from "../../utils/surfboardHelpers";
 import SubTitle1 from "../Text/SubTitle1";
+import DOMPurify from "dompurify";
 
 const initialForm = {
   category: "",
@@ -64,7 +65,8 @@ function UploadSurfboardForm() {
   // Handle input fields
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const sanitizedValue = DOMPurify.sanitize(value);
+    setFormData((prev) => ({ ...prev, [name]: sanitizedValue }));
   };
 
   // Handle image upload and preview
@@ -113,6 +115,19 @@ function UploadSurfboardForm() {
     e.preventDefault();
     setUploading(true);
     setSuccess(false);
+
+    // Validate required fields
+    if (
+      !formData.category ||
+      !formData.brand ||
+      !formData.model ||
+      !formData.size ||
+      !formData.price
+    ) {
+      alert("Please fill in all required fields.");
+      setUploading(false);
+      return;
+    }
 
     // Place cover image first
     let imagesForUpload = [...formData.images];

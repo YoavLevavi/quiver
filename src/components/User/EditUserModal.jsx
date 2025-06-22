@@ -9,10 +9,14 @@
  * @returns {JSX.Element} The rendered modal dialog.
  */
 import React from "react";
-import UploadSurfboardForm from "./UploadSurfboardForm";
 import useAuthStore from "../../store/useAuthStore";
+import EditUserComp from "./EditUserComp";
+import Title2 from "../Text/Title2";
+import Title3 from "../Text/Title3";
+import SubTitle1 from "../Text/SubTitle1";
+import TextLarge from "../Text/TextLarge";
 
-function UploadSurfboardModal({ open, onClose }) {
+function EditUserModal({ open, onClose }) {
   const { user, loginWithGoogle } = useAuthStore();
 
   return (
@@ -22,15 +26,20 @@ function UploadSurfboardModal({ open, onClose }) {
         onClick={(e) => e.stopPropagation()}
         style={{ direction: "rtl" }}
       >
-        <button
+      <button
           className="btn btn-sm btn-circle absolute left-2 top-2"
           onClick={onClose}
           aria-label="סגור"
         >
           ✕
         </button>
+        <Title3>ברוכים הבאים לQuiver!</Title3>
+        <TextLarge>
+          הכניסו את הפרטים שלכם כדי לקבל את החוויה הטובה ביותר!
+        </TextLarge>
+        
         {user ? (
-          <UploadSurfboardForm />
+          <EditUserComp />
         ) : (
           <div className="flex flex-col items-center justify-center min-h-[300px]">
             <h2 className="text-xl font-bold mb-4">התחברות נדרשת</h2>
@@ -56,4 +65,4 @@ function UploadSurfboardModal({ open, onClose }) {
   );
 }
 
-export default UploadSurfboardModal;
+export default EditUserModal;

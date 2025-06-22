@@ -8,7 +8,7 @@
  *   - "bg-red-300" for strong wind (speed >= 25)
  */
 export const getWindBg = (speed) => {
-  if (speed < 18) return "bg-green-300"; // light wind
-  if (speed < 25) return "bg-orange-300"; // moderate wind
+  if (speed < 15) return "bg-green-300"; // light wind
+  if (speed < 22) return "bg-orange-300"; // moderate wind
   return "bg-red-300"; // strong wind
 };

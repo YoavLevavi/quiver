@@ -84,7 +84,6 @@ function SurfboardCard({
             >
               <Trash2 size={18} />
             </button>
-
             {/* Delete confirmation modal */}
             <dialog id={`delete_modal_${surfboardId}`} className="modal">
               <div
@@ -120,12 +119,14 @@ function SurfboardCard({
         )}
         {/* className="relative w-full aspect-[9/16] overflow-hidden bg-gray-100" */}
 
-        <figure className="rounded-t-lg">
+        <figure
+          className="rounded-t-lg w-full aspect-[9/20] overflow-hidden bg-gray-100 flex items-center justify-center"
+          style={{ height: "340px" }}
+        >
           <img
             src={mainImage}
             alt={model}
-            // className="absolute inset-0 w-full h-full object-cover"
-            className="rounded-t-lg"
+            className="rounded-t-lg w-full h-full object-cover"
             loading="lazy"
           />
         </figure>
@@ -145,7 +146,7 @@ function SurfboardCard({
           </TextLarge>
 
           {/* Description placeholder */}
-          <TextBody className="line-clamp-3">
+          <TextBody className="line-clamp-2">
             {/* TODO: Replace with actual description */}
             {description}
           </TextBody>
@@ -153,9 +154,11 @@ function SurfboardCard({
           <TextSmall>
             {formatDate(uploadDate)} •{" "}
             {sellerData
-              ? `${sellerData.first_name ?? ""} ${
-                  sellerData.last_name ?? ""
-                }`.trim()
+              ? (
+                  (`${sellerData.first_name ?? ""} ${sellerData.last_name ?? ""}`.trim() ||
+                  sellerData.displayName ||
+                  "אנונימי")
+                )
               : "אנונימי"}
           </TextSmall>
         </div>

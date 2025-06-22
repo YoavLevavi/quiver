@@ -8,11 +8,11 @@ import Profile from "./pages/ProfilePage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ProtectedRoute from "./components/ProtectedRoute";
 import EditUserComp from "./components/User/EditUserComp";
-import SurfboardsCarousel from "./components/Surfboard/SurfboardsCarousel";
 import UploadSurfboardForm from "./components/Surfboard/UploadSurfboardForm";
 import ForecastPage from "./pages/ForecastPage";
 import SurfboardDetailsPage from "./pages/SurfboardDetailsPage";
 import InstallPrompt from "./components/UI/InstallPrompt";
+import UserOwedSurfboardsCarousel from "./components/Surfboard/UserOwedSurfboardsCarousel";
 
 function App() {
   const { initAuth } = useAuthStore();
@@ -44,7 +44,10 @@ function App() {
             <Route index element={<EditUserComp />} />
             {/* /profile/edit route */}
             <Route path="edit" element={<EditUserComp />} />
-            <Route path="my-surfboards" element={<SurfboardsCarousel />} />
+            <Route
+              path="my-surfboards"
+              element={<UserOwedSurfboardsCarousel />}
+            />
             <Route path="upload-surfboard" element={<UploadSurfboardForm />} />
           </Route>
           {/* Add more routes as needed */}

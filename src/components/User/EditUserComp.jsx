@@ -5,6 +5,7 @@ import { db, storage, auth } from "../../utils/firebase";
 import LoadingIndicator from "../UI/LoadingIndicator";
 import InputField from "../UI/InputField";
 import Alert from "../UI/Alert";
+import DOMPurify from "dompurify";
 
 /**
  * EditUserComp is a React functional component that provides a user profile editing editUserForm.
@@ -94,16 +95,27 @@ function EditUserComp() {
     fetchUser();
   }, [userId]);
 
-  // Handle input changes for editUserForm fields
+  // Updated handleChange to sanitize inputs
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    const sanitizedValue = DOMPurify.sanitize(value);
+    setForm((prev) => ({ ...prev, [name]: sanitizedValue }));
   };
 
   // Handle editUserForm submission to update user data in Firestore
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!userId) return;
+
+    // Validate required fields
+    if (
+      !editUserForm.first_name ||
+      !editUserForm.last_name ||
+      !editUserForm.phone_number
+    ) {
+      alert("Please fill in all required fields.");
+      return;
+    }
 
     try {
       // Reference to the user document

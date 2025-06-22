@@ -1,5 +1,11 @@
 import { create } from "zustand";
-import { doc, getDoc, updateDoc, setDoc, serverTimestamp } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  updateDoc,
+  setDoc,
+  serverTimestamp,
+} from "firebase/firestore";
 import { db, auth } from "../utils/firebase";
 
 const useUserStore = create((set) => ({
@@ -79,6 +85,12 @@ const useUserStore = create((set) => ({
     } catch (err) {
       console.error("Error updating user data:", err);
     }
+  },
+
+  // Get current user ID
+  getCurrentUserId: () => {
+    const state = useUserStore.getState();
+    return state.userData ? state.userData.uid : null;
   },
 }));
 

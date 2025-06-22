@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import NavBar from "../components/NavBar";
 import backgroundImage from "../assets/hero_background.jpg";
 import SurfboardsCarousel from "../components/Surfboard/SurfboardsCarousel";
@@ -6,11 +6,23 @@ import CategoryFilter from "../components/Surfboard/CategoryFilter";
 import Title1 from "../components/Text/Title1";
 import SubTitle1 from "../components/Text/SubTitle1";
 import Title2 from "../components/Text/Title2";
+import { useAuth } from "../contexts/AuthContext";
+import EditUserModal from "../components/User/EditUserModal";
 
 function Home() {
+  const { user } = useAuth();
+  const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    if (user && user.metadata?.creationTime === user.metadata?.lastSignInTime) {
+      setShowModal(true);
+    }
+  }, [user]);
+
   return (
     <div>
       <NavBar />
+      <EditUserModal open={showModal} onClose={() => setShowModal(false)} />
       {/* This is the hero section. */}
       <div
         className="flex items-center h-[600px] bg-center bg-cover bg-no-repeat"
