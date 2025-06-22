@@ -11,7 +11,6 @@ function GoogleSignInButton() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
-  // Handle redirect result on component mount
   useEffect(() => {
     getRedirectResult(auth)
       .then((result) => {
