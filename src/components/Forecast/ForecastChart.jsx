@@ -12,6 +12,21 @@ import {
 import { toFeet } from "../../utils/conversions";
 import useResponsivePadding from "../../hooks/useResponsivePadding";
 
+/**
+ * ForecastChart component renders a responsive bar chart displaying wave height forecasts for multiple days.
+ * It normalizes wave heights, groups data by day, and highlights Saturdays with a background area.
+ * The chart displays day labels, dates, and min-max wave height ranges for each day.
+ *
+ * @component
+ * @param {Object[]} forecastData - Array of forecast day objects, each containing a date, label, and slots.
+ * @param {string} forecastData[].date - The date string for the forecast day.
+ * @param {string} forecastData[].label - The label for the forecast day (e.g., "היום").
+ * @param {Object[]} forecastData[].slots - Array of time slot objects for the day.
+ * @param {string} forecastData[].slots[].time - The time of the slot (e.g., "08:00").
+ * @param {number} forecastData[].slots[].waveHeight - The wave height value for the slot (in meters).
+ * @param {"m"|"ft"} unit - The unit for displaying wave heights ("m" for meters, "ft" for feet).
+ * @returns {JSX.Element|null} The rendered bar chart or null if no data is provided.
+ */
 const ForecastChart = ({ forecastData, unit }) => {
   const xAxisPadding = useResponsivePadding();
   if (!forecastData || forecastData.length === 0) return null;
