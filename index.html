@@ -1,34 +1,79 @@
+<!-- 
+  This is the main HTML file for the Quiver application.
+  It sets up the document structure, includes meta tags for SEO and social sharing,
+  and initializes the root element for the React application.
+-->
 <!DOCTYPE html>
 <html lang="he" dir="rtl" data-theme="light">
+  <!-- The <html> tag defines the root of the HTML document.
+       lang="he" specifies the language as Hebrew.
+       dir="rtl" sets the text direction to right-to-left.
+       data-theme="light" initializes the theme to light mode. -->
   <head>
+    <!-- The <head> section contains metadata and links for the document. -->
     <meta charset="UTF-8" />
+    <!-- Specifies the character encoding for the document as UTF-8. -->
+
     <link
       rel="icon"
       type="image/svg+xml"
       href="./src/assets/quiver_logo_svg.svg"
     />
+    <!-- Links the favicon for the website, displayed in browser tabs. -->
+
     <link rel="manifest" href="/manifest.json" />
+    <!-- Links the web app manifest for Progressive Web App (PWA) support. -->
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Ensures the website is responsive by setting the viewport width to the device width. -->
+
     <!-- Add meta tags for SEO and social sharing -->
     <meta name="description" content="קוויבר - הבית של גולשי הגלים בישראל" />
+    <!-- Provides a description of the website for search engines. -->
+
     <meta property="og:title" content="קוויבר - הבית של גולשי הגלים בישראל" />
+    <!-- Specifies the title for Open Graph (used by social media platforms). -->
+
     <meta
       property="og:description"
       content="מצאו ומכרו גלשנים בקלות עם קוויבר"
     />
+    <!-- Specifies the description for Open Graph. -->
+
     <meta property="og:image" content="/src/assets/quiver_seo.jpg" />
+    <!-- Specifies the image for Open Graph. -->
+
     <meta property="og:url" content="https://quiver.co.il" />
-    <meta name="twitter:card" content="summary_large_image" />
+    <!-- Specifies the URL for Open Graph. -->
+
+    <meta name="twitter:card" content="/src/assets/quiver_seo.jpg" />
+    <!-- Specifies the type of Twitter card to display (large image). -->
+
     <meta name="twitter:title" content="קוויבר - הבית של גולשי הגלים בישראל" />
+    <!-- Specifies the title for Twitter cards. -->
+
     <meta
       name="twitter:description"
       content="מצאו ומכרו גלשנים בקלות עם קוויבר"
     />
+    <!-- Specifies the description for Twitter cards. -->
+
     <meta name="twitter:image" content="/src/assets/quiver_seo.jpg" />
+    <!-- Specifies the image for Twitter cards. -->
+
     <title>Quiver</title>
+    <!-- Sets the title of the document, displayed in the browser tab. -->
   </head>
   <body>
+    <!-- The <body> section contains the content of the document. -->
+
+    <!-- Root element for the React application -->
     <div id="root" data-theme></div>
+    <!-- The <div> with id="root" is where the React app will be mounted.
+         data-theme is used to manage the theme dynamically. -->
+
+    <!-- Main JavaScript entry point -->
     <script type="module" src="/src/main.jsx"></script>
+    <!-- Links the main JavaScript file for the application, using ES modules. -->
   </body>
 </html>
