@@ -1,11 +1,10 @@
-// import quiverLogo from "../assets/quiver_logo_svg.svg";
-
 import React, { useState } from "react";
 import useAuthStore from "../store/useAuthStore";
 import { NavLink } from "react-router";
 import HamburgerIcon from "./UI/HamburgerIcon";
 import UploadSurfboardModal from "./Surfboard/UploadSurfboardModal";
 import { Plus } from "lucide-react";
+import quiverLogo from "../assets/quiver_logo_svg.svg";
 
 /**
  * NavBar component renders the main navigation bar for the application.
@@ -62,11 +61,7 @@ function NavBar() {
           {/* Logo */}
           <NavLink to="/">
             <button className="flex-1 btn btn-ghost text-xl">
-              <img
-                width={"80px"}
-                src="./src/assets/icon.svg"
-                alt="Quiver Logo"
-              />
+              <img width={"80px"} src={quiverLogo} alt="Quiver Logo" />
             </button>
           </NavLink>
           {/* Desktop menu and search bar */}
