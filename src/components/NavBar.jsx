@@ -61,7 +61,13 @@ function NavBar() {
 
           {/* Logo */}
           <NavLink to="/">
-            <button className="flex-1 btn btn-ghost text-xl">Quiver</button>
+            <button className="flex-1 btn btn-ghost text-xl">
+              <img
+                width={"80px"}
+                src="/src/assets/icon.svg"
+                alt="Quiver Logo" 
+              />
+            </button>
           </NavLink>
           {/* Desktop menu and search bar */}
           <div className="hidden md:block">

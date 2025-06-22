@@ -11,13 +11,24 @@ export default function InstallPrompt() {
   const [isIOS, setIsIOS] = useState(false);
 
   useEffect(() => {
+    const LAST_PROMPT_KEY = "lastInstallPrompt";
+    const PROMPT_INTERVAL = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+
     // Check if the device is iOS
     const userAgent = window.navigator.userAgent;
     const isIOSDevice = /iPhone|iPad|iPod/.test(userAgent);
     setIsIOS(isIOSDevice);
 
+    const lastPrompt = localStorage.getItem(LAST_PROMPT_KEY);
+    const now = Date.now();
+
+    if (lastPrompt && now - parseInt(lastPrompt, 10) < PROMPT_INTERVAL) {
+      return; // Do not show the prompt if within the interval
+    }
+
     if (isIOSDevice) {
       setIsVisible(true);
+      localStorage.setItem(LAST_PROMPT_KEY, now.toString());
       return;
     }
 
@@ -26,6 +37,7 @@ export default function InstallPrompt() {
       e.preventDefault();
       setDeferredPrompt(e);
       setIsVisible(true);
+      localStorage.setItem(LAST_PROMPT_KEY, now.toString());
     };
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
