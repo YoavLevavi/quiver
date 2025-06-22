@@ -64,8 +64,8 @@ function NavBar() {
             <button className="flex-1 btn btn-ghost text-xl">
               <img
                 width={"80px"}
-                src="/src/assets/icon.svg"
-                alt="Quiver Logo" 
+                src="./src/assets/icon.svg"
+                alt="Quiver Logo"
               />
             </button>
           </NavLink>
