@@ -57,7 +57,3 @@ Built with React and Firebase, Quiver delivers a fast, mobile-first experience i
 
 - 🧑‍💼 **Admin Dashboard**  
   View and manage all listings with moderation tools.
-
----
-
-## 📁 Project Structure
