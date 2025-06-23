@@ -1,6 +1,13 @@
 import React from "react";
 import quiverLogo from "../assets/quiver_logo_svg.svg";
 
+/**
+ * Footer component for the Quiver.co.il website.
+ * Displays the site logo, a slogan in Hebrew, and copyright information.
+ * 
+ * @component
+ * @returns {JSX.Element} The rendered footer section.
+ */
 const Footer = () => {
   return (
     <footer className="footer footer-horizontal footer-center bg-base-200 content p-10">
