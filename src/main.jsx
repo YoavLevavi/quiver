@@ -8,6 +8,14 @@ import React from "react";
 import LoadingPage from "./components/UI/LoadingPage";
 import InstallPrompt from "./components/UI/InstallPrompt";
 import TrackPageView from "./components/UI/TrackPageView"; // Import the TrackPageView component
+import ReactGA from "react-ga4";
+import AppWrapper from "./components/UI/AppWrapper";
+
+// Initialize Google Analytics
+ReactGA.initialize(import.meta.env.VITE_GOOGLE_ANALYTICS_ID);
+
+// Track initial page view
+ReactGA.send({ hitType: "pageview", page: window.location.pathname });
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
@@ -23,29 +31,6 @@ if ("serviceWorker" in navigator) {
       }
     );
   });
-}
-
-function AppWrapper() {
-  const [isLoading, setIsLoading] = React.useState(true);
-
-  React.useEffect(() => {
-    // Simulate app initialization or data fetching
-    const timer = setTimeout(() => setIsLoading(false), 2000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (isLoading) {
-    return <LoadingPage />;
-  }
-
-  return (
-    <AuthProvider>
-      <BrowserRouter>
-        <TrackPageView /> {/* Add TrackPageView to track page views */}
-        <App />
-      </BrowserRouter>
-    </AuthProvider>
-  );
 }
 
 createRoot(document.getElementById("root")).render(
