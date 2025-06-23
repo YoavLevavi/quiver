@@ -13,6 +13,7 @@ import ForecastPage from "./pages/ForecastPage";
 import SurfboardDetailsPage from "./pages/SurfboardDetailsPage";
 import InstallPrompt from "./components/UI/InstallPrompt";
 import UserOwedSurfboardsCarousel from "./components/Surfboard/UserOwedSurfboardsCarousel";
+import Footer from "./components/Footer";
 
 function App() {
   const { initAuth } = useAuthStore();
@@ -53,6 +54,7 @@ function App() {
           {/* Add more routes as needed */}
         </Routes>
       </QueryClientProvider>
+      <Footer />
     </>
   );
 }
