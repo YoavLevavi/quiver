@@ -1,13 +1,7 @@
-import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles/index.css";
-import App from "./App.jsx";
-import { AuthProvider } from "./contexts/AuthContext.jsx";
-import { BrowserRouter } from "react-router";
 import React from "react";
-import LoadingPage from "./components/UI/LoadingPage";
 import InstallPrompt from "./components/UI/InstallPrompt";
-import TrackPageView from "./components/UI/TrackPageView"; // Import the TrackPageView component
 import ReactGA from "react-ga4";
 import AppWrapper from "./components/UI/AppWrapper";
 
