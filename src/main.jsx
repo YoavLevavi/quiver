@@ -7,6 +7,7 @@ import { BrowserRouter } from "react-router";
 import React from "react";
 import LoadingPage from "./components/UI/LoadingPage";
 import InstallPrompt from "./components/UI/InstallPrompt";
+import TrackPageView from "./components/UI/TrackPageView"; // Import the TrackPageView component
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
@@ -40,6 +41,7 @@ function AppWrapper() {
   return (
     <AuthProvider>
       <BrowserRouter>
+        <TrackPageView /> {/* Add TrackPageView to track page views */}
         <App />
       </BrowserRouter>
     </AuthProvider>
