@@ -41,10 +41,9 @@ Built with React and Firebase, Quiver delivers a fast, mobile-first experience i
   - Wind speed and direction
   - Water and air temperature
   - Sunrise and sunset times
-  - Hebrew calendar support (e.g., שבת highlights)
 
-- 📍 **Location Filtering**  
-  Listings and forecasts tailored by city or region.
+- 📍 **Smart Surfboards Search Filtering** - coming soon.
+  Searching surfboard in an easy ans smart way.
 
 - 🔐 **Secure Access**  
   Firebase Auth for user accounts and listing permissions.
@@ -54,6 +53,3 @@ Built with React and Firebase, Quiver delivers a fast, mobile-first experience i
 
 - 🇮🇱 **RTL Support**  
   Full support for Hebrew users with clean, accessible layout.
-
-- 🧑‍💼 **Admin Dashboard**  
-  View and manage all listings with moderation tools.
