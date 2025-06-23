@@ -6,6 +6,16 @@
 
 ---
 
+📌 **Important Notice**
+
+This code is shared strictly for recruitment and portfolio purposes.  
+It is intended to demonstrate development skills and project architecture.  
+Please do not copy, reuse, or republish any part of this repository without explicit permission.
+
+For inquiries, contact: yoavlevavi@gmail.com
+
+---
+
 ## 🏄 About the Project
 
 **Quiver** is a modern web application tailored for the Israeli surfing community. It combines a **secondhand surfboard marketplace** with a real-time **surf forecast dashboard**, making it easy to find boards, track wave conditions, and stay connected with local surf culture.
