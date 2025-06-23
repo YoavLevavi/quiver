@@ -6,7 +6,11 @@ const TrackPageView = () => {
   const location = useLocation();
 
   useEffect(() => {
-    ReactGA.send({ hitType: "pageview", page: location.pathname });
+    // Only track if Google Analytics is initialized
+    const gaId = import.meta.env.VITE_GOOGLE_ANALYTICS_ID;
+    if (gaId) {
+      ReactGA.send({ hitType: "pageview", page: location.pathname });
+    }
   }, [location]);
 
   return null;

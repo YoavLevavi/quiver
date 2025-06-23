@@ -5,11 +5,17 @@ import InstallPrompt from "./components/UI/InstallPrompt";
 import ReactGA from "react-ga4";
 import AppWrapper from "./components/UI/AppWrapper";
 
-// Initialize Google Analytics
-ReactGA.initialize(import.meta.env.VITE_GOOGLE_ANALYTICS_ID);
-
-// Track initial page view
-ReactGA.send({ hitType: "pageview", page: window.location.pathname });
+// Initialize Google Analytics only if measurement ID is available
+const gaId = import.meta.env.VITE_GOOGLE_ANALYTICS_ID;
+if (gaId) {
+  ReactGA.initialize(gaId);
+  // Track initial page view
+  ReactGA.send({ hitType: "pageview", page: window.location.pathname });
+} else {
+  console.warn(
+    "Google Analytics not initialized: VITE_GOOGLE_ANALYTICS_ID not found"
+  );
+}
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
